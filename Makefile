@@ -7,10 +7,10 @@ END_COLOR_PRINT ?= "\033[0m"
 TARGET_BINARY ?= API
 
 # The build directory, where the target binary will be stored
-BUILD_DIR ?= ./
+BUILD_DIR ?= ./build/
 
 # The source directory, where the 
-SRC_DIRS ?= ./
+SRC_DIRS ?= ./src/*
 
 # Linker flags
 LDFLAGS ?= 
@@ -28,10 +28,10 @@ release: $(BUILD_DIR)$(TARGET_BINARY)
 
 # Link all of the objects files
 $(BUILD_DIR)$(TARGET_BINARY):
-	@go build -ldflags="$(LDFLAGS)"
+	@go build -ldflags="$(LDFLAGS)" -o ${BUILD_DIR} ${SRC_DIRS}
 	@echo "\n" $(COLOR_PRINT_GREEN)$(TARGET_BINARY) "Has Been Built Successfully"$(END_COLOR_PRINT)
 
 # Remove the build directory
 clean:
-	@$(RM) $(BUILD_DIR)$(TARGET_BINARY)
-	@echo $(COLOR_PRINT_RED) "Removed" $(BUILD_DIR)$(TARGET_BINARY)$(END_COLOR_PRINT)
+	@$(RM) -r $(BUILD_DIR)
+	@echo $(COLOR_PRINT_RED) "Removed" $(BUILD_DIR)$(END_COLOR_PRINT)
