@@ -1,0 +1,15 @@
+[Unit]
+Description=API
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+LimitNOFILE=infinity
+User=root
+ExecStart=/root/API/API
+Restart=always
+RestartSec=5
+ 
+[Install]
+WantedBy=multi-user.target
