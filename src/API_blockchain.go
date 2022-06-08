@@ -108,8 +108,7 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   }
   inflation_height := count
   inflation_timestamp, _ := strconv.Atoi(strconv.FormatInt(time.Now().UTC().Unix(), 10))
-  inflation_time := (inflation_timestamp) + ((inflation_height - data_read_1.Result.Height) * (XCASH_DPOPS_BLOCK_TIME * 60))
-  
+  inflation_time := (inflation_timestamp) + ((inflation_height - data_read_1.Result.Height) * (XCASH_DPOPS_BLOCK_TIME * 60))  
 
   // get the blockchain size
   blockchain_data_size,err := blockchain_size()
