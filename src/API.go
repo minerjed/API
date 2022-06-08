@@ -20,7 +20,7 @@ DisableStartupMessage: true,
 })
 
 // setup blockchain routes
-app.Post("/test/",helloWorld)
+app.Get("/v1/xcash/blockchain/unauthorized/stats/",v1_xcash_blockchain_unauthorized_stats)
 
 
 // setup global routes
