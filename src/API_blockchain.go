@@ -385,8 +385,6 @@ func v1_xcash_blockchain_unauthorized_address_create_integrated(c *fiber.Ctx) er
     post_data.PaymentID = RandStringBytes(ENCRYPTED_PAYMENT_ID_LENGTH);
   }
 
-  fmt.Println(post_data.PaymentID)
-
   data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"make_integrated_address","params":{"standard_address":"` + post_data.Address + `", "payment_id":"` + post_data.PaymentID + `"}}`)
   if !strings.Contains(data_send, "\"result\"") {
     error := ErrorResults{"Could not create the integrated address"}
@@ -400,6 +398,90 @@ func v1_xcash_blockchain_unauthorized_address_create_integrated(c *fiber.Ctx) er
   // fill in the data
   output.IntegratedAddress = data_read_1.Result.IntegratedAddress
   output.PaymentID = data_read_1.Result.PaymentID
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
+
+  // Variables
+  var data_send string
+  var data_read_1 TxData
+  var data_read_2 CheckTxKey
+  var data_read_3 CurrentBlockHeight
+  var output v1XcashBlockchainUnauthorizedTxTxHash;
+  var tx string
+  var sender_data string
+  var receiver_data string
+  var key string
+
+  // get the resource
+  if tx = c.Params("txHash"); tx == "" {
+    error := ErrorResults{"Could not get the tx details"}
+    return c.JSON(error)
+  }
+  
+  // get info
+  data_send = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
+  if !strings.Contains(data_send, "\"status\": \"OK\"") {
+    error := ErrorResults{"Could not get the tx details"}
+    return c.JSON(error)
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
+    error := ErrorResults{"Could not get the tx details"}
+    return c.JSON(error)
+  }
+  
+  // get the public tx info
+  if strings.Contains(data_read_1.TxsAsHex[0], PUBLIC_TX_PREFIX) {
+    output.Type = "public"
+    
+    // decode the tx data
+    key = data_read_1.TxsAsHex[0][strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_PREFIX)+len(PUBLIC_TX_PREFIX):strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_PREFIX)+len(PUBLIC_TX_PREFIX)+TRANSACTION_HASH_LENGTH]
+    sender_data = data_read_1.TxsAsHex[0][strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_XCASH_PREFIX)+2 : strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_XCASH_PREFIX)+2+(XCASH_WALLET_LENGTH*2)]
+    data_read_1.TxsAsHex[0] = strings.Replace(data_read_1.TxsAsHex[0], sender_data, "", -1)
+    receiver_data = data_read_1.TxsAsHex[0][strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_XCASH_PREFIX)+2 : strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_XCASH_PREFIX)+2+(XCASH_WALLET_LENGTH*2)]
+    
+    data1,_ := hex.DecodeString(receiver_data)
+    data2,_ := hex.DecodeString(sender_data)
+    
+    output.Receiver = string(data1)
+    output.Sender = string(data2)
+    
+    // get the amount
+    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + output.Receiver + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") {
+      error := ErrorResults{"Could not get the tx details"}
+      return c.JSON(error)
+    }
+    if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
+      error := ErrorResults{"Could not get the tx details"}
+      return c.JSON(error)
+    }
+    
+    output.Amount = data_read_2.Result.Received
+  } else {
+    output.Type = "private"
+    output.Receiver = ""
+    output.Sender = ""
+    output.Amount = 0
+  }
+  
+  // get the current block Height
+  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
+  if !strings.Contains(data_send, "\"result\"") {
+    error := ErrorResults{"Could not get the tx details"}
+    return c.JSON(error)
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read_3); err != nil {
+    error := ErrorResults{"Could not get the tx details"}
+    return c.JSON(error)
+  }
+
+  // fill in the data
+  output.Height = data_read_1.Txs[0].BlockHeight
+  output.Confirmations = data_read_3.Result.Count - data_read_1.Txs[0].BlockHeight
+  output.Time = data_read_1.Txs[0].BlockTimestamp
     
   return c.JSON(output)
 }
