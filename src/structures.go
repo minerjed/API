@@ -132,6 +132,46 @@ type BlockchainBlockJson struct {
 	TxHashes []string `json:"tx_hashes"`
 }
 
+type CheckTxKey struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Confirmations int   `json:"confirmations"`
+		InPool        bool  `json:"in_pool"`
+		Received      int64 `json:"received"`
+	} `json:"result"`
+}
+
+type CheckTxProof struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Confirmations int   `json:"confirmations"`
+		Good          bool  `json:"good"`
+		InPool        bool  `json:"in_pool"`
+		Received      int64 `json:"received"`
+	} `json:"result"`
+}
+
+type CheckReserveProof struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Good  bool  `json:"good"`
+		Spent int   `json:"spent"`
+		Total int64 `json:"total"`
+	} `json:"result"`
+}
+
+type CreateIntegratedAddress struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		IntegratedAddress string `json:"integrated_address"`
+		PaymentID         string `json:"payment_id"`
+	} `json:"result"`
+}
+
 
 // API Structures
 
@@ -164,6 +204,19 @@ type v1XcashBlockchainUnauthorizedBlocksBlockHeight struct {
 	Tx           []string      `json:"tx"`
 }
 
+type v1XcashBlockchainUnauthorizedTxProve struct {
+	Valid  bool `json:"valid"`
+	Amount int64  `json:"amount"`
+}
+
+type v1XcashBlockchainUnauthorizedAddressProve struct {
+	Amount       int64 `json:"amount"`
+}
+
+type v1XcashBlockchainUnauthorizedAddressCreateIntegrated struct {
+	IntegratedAddress string `json:"integratedAddress"`
+	PaymentID         string `json:"paymentId"`
+}
 
 
 
@@ -174,4 +227,22 @@ type XcashDpopsReserveBytesCollection struct {
 	BlockHeight          string `bson:"block_height"`
 	ReserveBytesDataHash string `bson:"reserve_bytes_data_hash"`
 	ReserveBytes         string `bson:"reserve_bytes"`
+}
+
+
+// Post request data
+type v1XcashBlockchainUnauthorizedTxProvePostData struct {
+	Tx      string `json:"tx"`
+	Address string `json:"address"`
+	Key     string `json:"key"`
+}
+
+type v1XcashBlockchainUnauthorizedAddressProvePostData struct {
+	Address       string `json:"address"`
+	Signature     string `json:"signature"`
+}
+
+type v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData struct {
+	Address           string `json:"Address"`
+	PaymentID         string `json:"paymentId"`
 }
