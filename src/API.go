@@ -2,6 +2,7 @@ package main
  
 import (
 "context"
+"math/rand"
 "os"
 "time"
 "github.com/gofiber/fiber/v2"
@@ -18,6 +19,9 @@ blockchain API in src/API_blockchain.go
 
 func main() {
 
+  // set the random number generator
+  rand.Seed(time.Now().UTC().UnixNano())
+
   // setup the mongodb connection
   ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
   defer cancel()
@@ -32,26 +36,26 @@ func main() {
     }
   }()
         
-// setup fiber
-app := fiber.New(fiber.Config{
-Prefork: true,
-DisableStartupMessage: true,
-})
+  // setup fiber
+  app := fiber.New(fiber.Config{
+    Prefork: true,
+    DisableStartupMessage: true,
+  })
 
-// setup blockchain routes
-app.Get("/v1/xcash/blockchain/unauthorized/stats/",v1_xcash_blockchain_unauthorized_stats)
-app.Get("/v1/xcash/blockchain/unauthorized/blocks/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
-app.Get("/v1/xcash/blockchain/unauthorized/blocks/:blockHeight/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
-/*app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
-app.Get("/v1/xcash/blockchain/unauthorized/tx/prove/",v1_xcash_blockchain_unauthorized_tx_prove)
-app.Get("/v1/xcash/blockchain/unauthorized/address/prove",v1_xcash_blockchain_unauthorized_address_prove)
-app.Get("/v1/xcash/blockchain/unauthorized/address/createIntegrated",v1_xcash_blockchain_unauthorized_address_createIntegrated)*/
+  // setup blockchain routes
+  app.Get("/v1/xcash/blockchain/unauthorized/stats/",v1_xcash_blockchain_unauthorized_stats)
+  app.Get("/v1/xcash/blockchain/unauthorized/blocks/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
+  app.Get("/v1/xcash/blockchain/unauthorized/blocks/:blockHeight/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
+  //app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
+  app.Post("/v1/xcash/blockchain/unauthorized/tx/prove/",v1_xcash_blockchain_unauthorized_tx_prove)
+  app.Post("/v1/xcash/blockchain/unauthorized/address/prove",v1_xcash_blockchain_unauthorized_address_prove)
+  app.Post("/v1/xcash/blockchain/unauthorized/address/createIntegrated",v1_xcash_blockchain_unauthorized_address_create_integrated)
 
 
-// setup global routes
-app.Get("/*", func(c *fiber.Ctx) error {
-  return c.SendString("Invalid API Request")
-})
+  // setup global routes
+  app.Get("/*", func(c *fiber.Ctx) error {
+    return c.SendString("Invalid API Request")
+  })
  
   app.Listen(":9000")
 }
