@@ -46,7 +46,7 @@ func main() {
   app.Get("/v1/xcash/blockchain/unauthorized/stats/",v1_xcash_blockchain_unauthorized_stats)
   app.Get("/v1/xcash/blockchain/unauthorized/blocks/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
   app.Get("/v1/xcash/blockchain/unauthorized/blocks/:blockHeight/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
-  //app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
+  app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
   app.Post("/v1/xcash/blockchain/unauthorized/tx/prove/",v1_xcash_blockchain_unauthorized_tx_prove)
   app.Post("/v1/xcash/blockchain/unauthorized/address/prove",v1_xcash_blockchain_unauthorized_address_prove)
   app.Post("/v1/xcash/blockchain/unauthorized/address/createIntegrated",v1_xcash_blockchain_unauthorized_address_create_integrated)
