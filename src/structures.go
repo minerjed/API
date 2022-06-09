@@ -104,6 +104,34 @@ type BlockchainBlock struct {
 	} `json:"result"`
 }
 
+type BlockchainBlockJson struct {
+	MajorVersion int    `json:"major_version"`
+	MinorVersion int    `json:"minor_version"`
+	Timestamp    int    `json:"timestamp"`
+	PrevID       string `json:"prev_id"`
+	Nonce        int    `json:"nonce"`
+	MinerTx      struct {
+		Version    int `json:"version"`
+		UnlockTime int `json:"unlock_time"`
+		Vin        []struct {
+			Gen struct {
+				Height int `json:"height"`
+			} `json:"gen"`
+		} `json:"vin"`
+		Vout []struct {
+			Amount int64 `json:"amount"`
+			Target struct {
+				Key string `json:"key"`
+			} `json:"target"`
+		} `json:"vout"`
+		Extra         []int `json:"extra"`
+		RctSignatures struct {
+			Type int `json:"type"`
+		} `json:"rct_signatures"`
+	} `json:"miner_tx"`
+	TxHashes []string `json:"tx_hashes"`
+}
+
 
 // API Structures
 
@@ -124,4 +152,26 @@ type v1XcashBlockchainUnauthorizedStats struct {
     	EmissionTime           int `json:"emissionTime"`
         InflationHeight        int `json:"inflationHeight"`
     	InflationTime          int `json:"inflationTime"`
+}
+
+type v1XcashBlockchainUnauthorizedBlocksBlockHeight struct {
+	Height       int           `json:"height"`
+	Hash         string        `json:"hash"`
+	Reward       int64         `json:"reward"`
+	Time         int           `json:"time"`
+	XcashDPOPS   bool          `json:"xcashDPOPS"`
+	DelegateName string        `json:"delegateName"`
+	Tx           []string      `json:"tx"`
+}
+
+
+
+
+
+// Database
+type XcashDpopsReserveBytesCollection struct {
+	ID                   string `bson:"_id"`
+	BlockHeight          string `bson:"block_height"`
+	ReserveBytesDataHash string `bson:"reserve_bytes_data_hash"`
+	ReserveBytes         string `bson:"reserve_bytes"`
 }
