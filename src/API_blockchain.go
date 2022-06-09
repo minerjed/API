@@ -2,6 +2,7 @@ package main
 
 import (
 "fmt"
+"math/rand"
 "strings"
 "context"
 "strconv"
@@ -30,6 +31,17 @@ func blockchain_size() (int64, error) {
   return err
   })
   return size, err
+}
+
+func RandStringBytes(n int) string {
+  // Constants
+  const letterBytes = "0123456789abcdef"
+
+  b := make([]byte, n)
+  for i := range b {
+      b[i] = letterBytes[rand.Intn(len(letterBytes))]
+  }
+  return string(b)
 }
 
 func get_block_delegate(requestBlockHeight int) string {
@@ -243,6 +255,151 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
   output.XcashDPOPS = xcash_dpops_status
   output.DelegateName = xcash_dpops_delegate
   output.Tx = data_read_3.TxHashes
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_blockchain_unauthorized_tx_prove(c *fiber.Ctx) error {
+
+  // Variables
+  var data_send string
+  var data_read_1 CheckTxKey
+  var data_read_2 CheckTxProof
+  var output v1XcashBlockchainUnauthorizedTxProve;
+  var amount int64
+  var valid bool
+  var post_data v1XcashBlockchainUnauthorizedTxProvePostData
+
+  if err := c.BodyParser(&post_data); err != nil {
+    error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+    return c.JSON(error)
+  }
+
+  // error check
+  if post_data.Tx == "" || post_data.Address == "" || post_data.Key == "" || len(post_data.Tx) != TRANSACTION_HASH_LENGTH || len(post_data.Address) != XCASH_WALLET_LENGTH || post_data.Address[0:len(XCASH_WALLET_PREFIX)] != XCASH_WALLET_PREFIX || (len(post_data.Key) != TRANSACTION_HASH_LENGTH && post_data.Key[0:len(CHECK_TX_PROOF_PREFIX)] != CHECK_TX_PROOF_PREFIX) {
+    error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+    return c.JSON(error)
+  }
+  
+  if len(post_data.Key) == TRANSACTION_HASH_LENGTH {
+    // get info
+    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + post_data.Tx + `","tx_key":"` + post_data.Key + `","address":"` + post_data.Address + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") {
+      error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+      return c.JSON(error)
+    }
+    if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
+      error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+      return c.JSON(error)
+    }
+    
+    valid = true
+    amount = data_read_1.Result.Received
+  } else {
+    // get info
+    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_proof","params":{"txid":"` + post_data.Tx + `","address":"` + post_data.Address + `","signature":"` + post_data.Key + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") {
+      error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+      return c.JSON(error)
+    }
+    if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
+      error := v1XcashBlockchainUnauthorizedTxProve{false,0}
+      return c.JSON(error)
+    }   
+
+    valid = data_read_2.Result.Good
+    amount = data_read_2.Result.Received
+  }
+
+  // fill in the data
+  output.Valid = valid
+  output.Amount = amount
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_blockchain_unauthorized_address_prove(c *fiber.Ctx) error {
+
+  // Variables
+  var data_send string
+  var data_read_1 CheckReserveProof
+  var output v1XcashBlockchainUnauthorizedAddressProve;
+  var amount int64
+  var post_data v1XcashBlockchainUnauthorizedAddressProvePostData
+
+  if err := c.BodyParser(&post_data); err != nil {
+    error := v1XcashBlockchainUnauthorizedAddressProve{0}
+    return c.JSON(error)
+  }
+
+  // error check
+  if post_data.Address == "" || len(post_data.Address) != XCASH_WALLET_LENGTH || post_data.Address[0:len(XCASH_WALLET_PREFIX)] != XCASH_WALLET_PREFIX || post_data.Signature == "" || post_data.Signature[0:len(CHECK_RESERVE_PROOF_PREFIX)] != CHECK_RESERVE_PROOF_PREFIX {
+    error := v1XcashBlockchainUnauthorizedAddressProve{0}
+    return c.JSON(error)
+  }  
+  
+  // get info
+  data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_reserve_proof","params":{"address":"` + post_data.Address + `","signature":"` + post_data.Signature + `"}}`)
+  if !strings.Contains(data_send, "\"result\"") {
+    error := v1XcashBlockchainUnauthorizedAddressProve{0}
+    return c.JSON(error)
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
+    error := v1XcashBlockchainUnauthorizedAddressProve{0}
+    return c.JSON(error)
+  }   
+
+  if data_read_1.Result.Good && data_read_1.Result.Spent == 0 {
+    amount = data_read_1.Result.Total
+  } else {
+    amount = 0
+  }
+
+  // fill in the data
+  output.Amount = amount
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_blockchain_unauthorized_address_create_integrated(c *fiber.Ctx) error {
+
+  // Variables
+  var data_send string
+  var data_read_1 CreateIntegratedAddress
+  var output v1XcashBlockchainUnauthorizedAddressCreateIntegrated;
+  var post_data v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData
+
+  if err := c.BodyParser(&post_data); err != nil {
+    error := ErrorResults{"Could not create the integrated address"}
+    return c.JSON(error)
+  }
+
+  // error check
+  if post_data.Address == "" || len(post_data.Address) != XCASH_WALLET_LENGTH || post_data.Address[0:len(XCASH_WALLET_PREFIX)] != XCASH_WALLET_PREFIX || (post_data.PaymentID != "" && len(post_data.PaymentID) != ENCRYPTED_PAYMENT_ID_LENGTH) {
+    error := ErrorResults{"Could not create the integrated address"}
+    return c.JSON(error)
+  }  
+  
+  // get info
+  if post_data.PaymentID == "" {
+    post_data.PaymentID = RandStringBytes(ENCRYPTED_PAYMENT_ID_LENGTH);
+  }
+
+  fmt.Println(post_data.PaymentID)
+
+  data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"make_integrated_address","params":{"standard_address":"` + post_data.Address + `", "payment_id":"` + post_data.PaymentID + `"}}`)
+  if !strings.Contains(data_send, "\"result\"") {
+    error := ErrorResults{"Could not create the integrated address"}
+    return c.JSON(error)
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
+    error := ErrorResults{"Could not create the integrated address"}
+    return c.JSON(error)
+  } 
+
+  // fill in the data
+  output.IntegratedAddress = data_read_1.Result.IntegratedAddress
+  output.PaymentID = data_read_1.Result.PaymentID
     
   return c.JSON(output)
 }
