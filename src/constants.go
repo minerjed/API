@@ -31,6 +31,8 @@ const XCASH_WALLET_PREFIX = "XCA"
 const CHECK_TX_PROOF_PREFIX = "InProofV1"
 const CHECK_RESERVE_PROOF_PREFIX = "ReserveProofV1"
 const ENCRYPTED_PAYMENT_ID_LENGTH = 16
+const PUBLIC_TX_PREFIX = "20202227c"
+const PUBLIC_TX_XCASH_PREFIX = "7c584341"
 
 // Variables
 var mongoClient *mongo.Client
