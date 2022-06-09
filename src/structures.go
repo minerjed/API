@@ -172,6 +172,37 @@ type CreateIntegratedAddress struct {
 	} `json:"result"`
 }
 
+type TxData struct {
+	Credits int    `json:"credits"`
+	Status  string `json:"status"`
+	TopHash string `json:"top_hash"`
+	Txs     []struct {
+		AsHex           string `json:"as_hex"`
+		AsJSON          string `json:"as_json"`
+		BlockHeight     int    `json:"block_height"`
+		BlockTimestamp  int    `json:"block_timestamp"`
+		DoubleSpendSeen bool   `json:"double_spend_seen"`
+		InPool          bool   `json:"in_pool"`
+		OutputIndices   []int  `json:"output_indices"`
+		PrunableAsHex   string `json:"prunable_as_hex"`
+		PrunableHash    string `json:"prunable_hash"`
+		PrunedAsHex     string `json:"pruned_as_hex"`
+		TxHash          string `json:"tx_hash"`
+	} `json:"txs"`
+	TxsAsHex  []string `json:"txs_as_hex"`
+	Untrusted bool     `json:"untrusted"`
+}
+
+type CurrentBlockHeight struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Count     int    `json:"count"`
+		Status    string `json:"status"`
+		Untrusted string `json:"untrusted"`
+	} `json:"result"`
+}
+
 
 // API Structures
 
@@ -216,6 +247,16 @@ type v1XcashBlockchainUnauthorizedAddressProve struct {
 type v1XcashBlockchainUnauthorizedAddressCreateIntegrated struct {
 	IntegratedAddress string `json:"integratedAddress"`
 	PaymentID         string `json:"paymentId"`
+}
+
+type v1XcashBlockchainUnauthorizedTxTxHash struct {
+	Height        int    `json:"height"`
+	Confirmations int    `json:"confirmations"`
+	Time          int    `json:"time"`
+	Type          string `json:"type"`
+	Sender        string `json:"sender"`
+	Receiver      string `json:"receiver"`
+	Amount        int64    `json:"amount"`
 }
 
 
