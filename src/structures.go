@@ -8,14 +8,7 @@ type ErrorResults struct {
 
 
 
-
-
-
-
-
 // Blockchain
-
-// Internal Structures
 
 type BlockchainStats struct {
 	ID      string `json:"id"`
@@ -259,15 +252,139 @@ type v1XcashBlockchainUnauthorizedTxTxHash struct {
 	Amount        int64    `json:"amount"`
 }
 
+type v1XcashDpopsUnauthorizedStats struct {
+	MostTotalRoundsDelegateName                   string `json:"mostTotalRoundsDelegateName"`
+	MostTotalRounds                               int    `json:"mostTotalRounds"`
+	BestBlockVerifierOnlinePercentageDelegateName string `json:"bestBlockVerifierOnlinePercentageDelegateName"`
+	BestBlockVerifierOnlinePercentage             int    `json:"bestBlockVerifierOnlinePercentage"`
+	MostBlockProducerTotalRoundsDelegateName      string `json:"mostBlockProducerTotalRoundsDelegateName"`
+	MostBlockProducerTotalRounds                  int    `json:"mostBlockProducerTotalRounds"`
+	TotalVotes                                    int64  `json:"totalVotes"`
+	TotalVoters                                   int    `json:"totalVoters"`
+	AverageVote                                   int64  `json:"averageVote"`
+	VotePercentage                                int    `json:"votePercentage"`
+	RoundNumber                                   int    `json:"roundNumber"`
+	TotalRegisteredDelegates                      int    `json:"totalRegisteredDelegates"`
+	TotalOnlineDelegates                          int    `json:"totalOnlineDelegates"`
+	CurrentBlockVerifiersMaximumAmount            int    `json:"currentBlockVerifiersMaximumAmount"`
+	CurrentBlockVerifiersValidAmount              int    `json:"currentBlockVerifiersValidAmount"`
+}
+
+type v1XcashDpopsUnauthorizedDelegatesBasicData struct {
+	Votes                    int64  `json:"votes"`
+	Voters                   int    `json:"voters"`
+	IPAdress                 string `json:"IPAdress"`
+	DelegateName             string `json:"delegateName"`
+	SharedDelegate           bool   `json:"sharedDelegate"`
+	SeedNode                 bool   `json:"seedNode"`
+	Online                   bool   `json:"online"`
+	Fee                      int    `json:"fee"`
+	TotalRounds              int    `json:"totalRounds"`
+	TotalBlockProducerRounds int    `json:"totalBlockProducerRounds"`
+	OnlinePercentage         int    `json:"onlinePercentage"`
+}
+
+type v1XcashDpopsUnauthorizedDelegatesData struct {
+	Votes                    int64  `json:"votes"`
+	Voters                   int    `json:"voters"`
+	IPAdress                 string `json:"IPAdress"`
+	DelegateName             string `json:"delegateName"`
+	PublicAddress            string `json:"publicAddress"`
+	About                    string `json:"about"`
+	Website                  string `json:"website"`
+	Team                     string `json:"team"`
+	Specifications           string `json:"specifications"`
+	SharedDelegate           bool   `json:"sharedDelegate"`
+	SeedNode                 bool   `json:"seedNode"`
+	Online                   bool   `json:"online"`
+	Fee                      int    `json:"fee"`
+	TotalRounds              int    `json:"totalRounds"`
+	TotalBlockProducerRounds int    `json:"totalBlockProducerRounds"`
+	OnlinePercentage         int    `json:"onlinePercentage"`
+	Rank                     int    `json:"rank"`
+}
+
+type v1XcashDpopsUnauthorizedDelegatesRounds struct {
+	TotalBlocksProduced int `json:"totalBlocksProduced"`
+	TotalBlockRewards   int64 `json:"totalBlockRewards"`
+	AveragePercentage   int `json:"averagePercentage"`
+	AverageTime         int `json:"averageTime"`
+	BlocksProduced      []struct {
+		BlockHeight int `json:"blockHeight"`
+		BlockReward int64 `json:"blockReward"`
+		Time        int `json:"time"`
+	} `json:"blocksProduced"`
+}
+
+type v1XcashDpopsUnauthorizedDelegatesVotes []struct {
+	PublicAddress string `json:"publicAddress"`
+	Amount        int64    `json:"amount"`
+	ReserveProof  string `json:"reserveProof"`
+}
+
+type v1XcashDpopsUnauthorizedVotes struct {
+	DelegateName  string `json:"delegateName"`
+	PublicAddress string `json:"publicAddress"`
+	Amount        int64    `json:"amount"`
+}
+
+type v1XcashDpopsUnauthorizedRounds struct {
+	Delegates []string `json:"delegates"`
+}
+
+type v1XcashDpopsUnauthorizedLastBlockProducer struct {
+	LastBlockProducer string `json:"lastBlockProducer"`
+}
 
 
 
 // Database
+type XcashDpopsReserveProofsCollection struct {
+	ID                               string `bson:"_id"`
+	PublicAddressCreatedReserveProof string `bson:"public_address_created_reserve_proof"`
+	PublicAddressVotedFor            string `bson:"public_address_voted_for"`
+	Total                            string `bson:"total"`
+	ReserveProof                     string `bson:"reserve_proof"`
+}
+
 type XcashDpopsReserveBytesCollection struct {
 	ID                   string `bson:"_id"`
 	BlockHeight          string `bson:"block_height"`
 	ReserveBytesDataHash string `bson:"reserve_bytes_data_hash"`
 	ReserveBytes         string `bson:"reserve_bytes"`
+}
+
+type XcashDpopsDelegatesCollection struct {
+	ID                             string `bson:"_id"`
+	PublicAddress                  string `bson:"public_address"`
+	TotalVoteCount                 string `bson:"total_vote_count"`
+	IPAddress                      string `bson:"IP_address"`
+	DelegateName                   string `bson:"delegate_name"`
+	About                          string `bson:"about"`
+	Website                        string `bson:"website"`
+	Team                           string `bson:"team"`
+	SharedDelegateStatus           string `bson:"shared_delegate_status"`
+	DelegateFee                    string `bson:"delegate_fee"`
+	ServerSpecs                    string `bson:"server_specs"`
+	BlockVerifierScore             string `bson:"block_verifier_score"`
+	OnlineStatus                   string `bson:"online_status"`
+	BlockVerifierTotalRounds       string `bson:"block_verifier_total_rounds"`
+	BlockVerifierOnlineTotalRounds string `bson:"block_verifier_online_total_rounds"`
+	BlockVerifierOnlinePercentage  string `bson:"block_verifier_online_percentage"`
+	BlockProducerTotalRounds       string `bson:"block_producer_total_rounds"`
+	BlockProducerBlockHeights      string `bson:"block_producer_block_heights"`
+	PublicKey                      string `bson:"public_key"`
+}
+
+type XcashDpopsStatisticsCollection struct {
+	ID                                            string `bson:"_id"`
+	Username                                      string `bson:"username"`
+	MostTotalRoundsDelegateName                   string `bson:"most_total_rounds_delegate_name"`
+	MostTotalRounds                               string `bson:"most_total_rounds"`
+	BestBlockVerifierOnlinePercentageDelegateName string `bson:"best_block_verifier_online_percentage_delegate_name"`
+	BestBlockVerifierOnlinePercentage             string `bson:"best_block_verifier_online_percentage"`
+	MostBlockProducerTotalRoundsDelegateName      string `bson:"most_block_producer_total_rounds_delegate_name"`
+	MostBlockProducerTotalRounds                  string `bson:"most_block_producer_total_rounds"`
 }
 
 
