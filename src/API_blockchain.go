@@ -44,8 +44,23 @@ func RandStringBytes(n int) string {
   return string(b)
 }
 
+func get_current_block_height() int {
+  // Variables
+  var data_read CurrentBlockHeight
+  var data_send string
+  
+  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
+  if !strings.Contains(data_send, "\"result\"") {
+    return 0
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read); err != nil {
+    return 0
+  }
+  return data_read.Result.Count
+}
+
 func get_block_delegate(requestBlockHeight int) string {
-  // varaibles
+  // Variables
   var database_data XcashDpopsReserveBytesCollection
 
   // get the collection
