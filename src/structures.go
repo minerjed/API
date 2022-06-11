@@ -196,6 +196,41 @@ type CurrentBlockHeight struct {
 	} `json:"result"`
 }
 
+type BlockHeaderRange struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Credits int `json:"credits"`
+		Headers []struct {
+			BlockSize                 int    `json:"block_size"`
+			BlockWeight               int    `json:"block_weight"`
+			CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
+			CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+			Depth                     int    `json:"depth"`
+			Difficulty                int64  `json:"difficulty"`
+			DifficultyTop64           int    `json:"difficulty_top64"`
+			Hash                      string `json:"hash"`
+			Height                    int    `json:"height"`
+			LongTermWeight            int    `json:"long_term_weight"`
+			MajorVersion              int    `json:"major_version"`
+			MinerTxHash               string `json:"miner_tx_hash"`
+			MinorVersion              int    `json:"minor_version"`
+			Nonce                     int64  `json:"nonce"`
+			NumTxes                   int    `json:"num_txes"`
+			OrphanStatus              bool   `json:"orphan_status"`
+			PowHash                   string `json:"pow_hash"`
+			PrevHash                  string `json:"prev_hash"`
+			Reward                    int64  `json:"reward"`
+			Timestamp                 int    `json:"timestamp"`
+			WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+			WideDifficulty            string `json:"wide_difficulty"`
+		} `json:"headers"`
+		Status    string `json:"status"`
+		TopHash   string `json:"top_hash"`
+		Untrusted bool   `json:"untrusted"`
+	} `json:"result"`
+}
+
 
 // API Structures
 
@@ -305,10 +340,6 @@ type v1XcashDpopsUnauthorizedDelegatesData struct {
 }
 
 type v1XcashDpopsUnauthorizedDelegatesRounds struct {
-	TotalBlocksProduced int `json:"totalBlocksProduced"`
-	TotalBlockRewards   int64 `json:"totalBlockRewards"`
-	AveragePercentage   int `json:"averagePercentage"`
-	AverageTime         int `json:"averageTime"`
 	BlocksProduced      []struct {
 		BlockHeight int `json:"blockHeight"`
 		BlockReward int64 `json:"blockReward"`
@@ -316,7 +347,13 @@ type v1XcashDpopsUnauthorizedDelegatesRounds struct {
 	} `json:"blocksProduced"`
 }
 
-type v1XcashDpopsUnauthorizedDelegatesVotes []struct {
+type BlocksProduced      struct {
+		BlockHeight int `json:"blockHeight"`
+		BlockReward int64 `json:"blockReward"`
+		Time        int `json:"time"`
+	}
+
+type v1XcashDpopsUnauthorizedDelegatesVotes struct {
 	PublicAddress string `json:"publicAddress"`
 	Amount        int64    `json:"amount"`
 	ReserveProof  string `json:"reserveProof"`
@@ -324,7 +361,6 @@ type v1XcashDpopsUnauthorizedDelegatesVotes []struct {
 
 type v1XcashDpopsUnauthorizedVotes struct {
 	DelegateName  string `json:"delegateName"`
-	PublicAddress string `json:"publicAddress"`
 	Amount        int64    `json:"amount"`
 }
 
