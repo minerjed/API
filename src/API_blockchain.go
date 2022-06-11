@@ -48,9 +48,10 @@ func get_current_block_height() int {
   // Variables
   var data_read CurrentBlockHeight
   var data_send string
+  var error error
   
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     return 0
   }
   if err := json.Unmarshal([]byte(data_send), &data_read); err != nil {
@@ -100,10 +101,11 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   generated_supply := FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY
   generated_supply_copy := FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY
   var reward float64
+  var error error
   
   // get info
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the stats"}
     return c.JSON(error)
   }
@@ -113,8 +115,8 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   }
 
   // get block
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":` + strconv.FormatInt(int64(data_read_1.Result.Height-1), 10) + `}}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":` + strconv.FormatInt(int64(data_read_1.Result.Height-1), 10) + `}}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the stats"}
     return c.JSON(error)
   }
@@ -214,10 +216,11 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
   var requestBlockHeight string
   var xcash_dpops_status bool
   var xcash_dpops_delegate string
+  var error error
   
   // get info
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the block data"}
     return c.JSON(error)
   }
@@ -233,8 +236,8 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
   }
 
   // get block
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":` + requestBlockHeight + `}}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":` + requestBlockHeight + `}}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the block data"}
     return c.JSON(error)
   }
@@ -284,6 +287,7 @@ func v1_xcash_blockchain_unauthorized_tx_prove(c *fiber.Ctx) error {
   var amount int64
   var valid bool
   var post_data v1XcashBlockchainUnauthorizedTxProvePostData
+  var error error
 
   if err := c.BodyParser(&post_data); err != nil {
     error := v1XcashBlockchainUnauthorizedTxProve{false,0}
@@ -298,8 +302,8 @@ func v1_xcash_blockchain_unauthorized_tx_prove(c *fiber.Ctx) error {
   
   if len(post_data.Key) == TRANSACTION_HASH_LENGTH {
     // get info
-    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + post_data.Tx + `","tx_key":"` + post_data.Key + `","address":"` + post_data.Address + `"}}`)
-    if !strings.Contains(data_send, "\"result\"") {
+    data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + post_data.Tx + `","tx_key":"` + post_data.Key + `","address":"` + post_data.Address + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") || error != nil {
       error := v1XcashBlockchainUnauthorizedTxProve{false,0}
       return c.JSON(error)
     }
@@ -312,8 +316,8 @@ func v1_xcash_blockchain_unauthorized_tx_prove(c *fiber.Ctx) error {
     amount = data_read_1.Result.Received
   } else {
     // get info
-    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_proof","params":{"txid":"` + post_data.Tx + `","address":"` + post_data.Address + `","signature":"` + post_data.Key + `"}}`)
-    if !strings.Contains(data_send, "\"result\"") {
+    data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_proof","params":{"txid":"` + post_data.Tx + `","address":"` + post_data.Address + `","signature":"` + post_data.Key + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") || error != nil {
       error := v1XcashBlockchainUnauthorizedTxProve{false,0}
       return c.JSON(error)
     }
@@ -341,6 +345,7 @@ func v1_xcash_blockchain_unauthorized_address_prove(c *fiber.Ctx) error {
   var output v1XcashBlockchainUnauthorizedAddressProve;
   var amount int64
   var post_data v1XcashBlockchainUnauthorizedAddressProvePostData
+  var error error
 
   if err := c.BodyParser(&post_data); err != nil {
     error := v1XcashBlockchainUnauthorizedAddressProve{0}
@@ -354,8 +359,8 @@ func v1_xcash_blockchain_unauthorized_address_prove(c *fiber.Ctx) error {
   }  
   
   // get info
-  data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_reserve_proof","params":{"address":"` + post_data.Address + `","signature":"` + post_data.Signature + `"}}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_reserve_proof","params":{"address":"` + post_data.Address + `","signature":"` + post_data.Signature + `"}}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := v1XcashBlockchainUnauthorizedAddressProve{0}
     return c.JSON(error)
   }
@@ -383,6 +388,7 @@ func v1_xcash_blockchain_unauthorized_address_create_integrated(c *fiber.Ctx) er
   var data_read_1 CreateIntegratedAddress
   var output v1XcashBlockchainUnauthorizedAddressCreateIntegrated;
   var post_data v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData
+  var error error
 
   if err := c.BodyParser(&post_data); err != nil {
     error := ErrorResults{"Could not create the integrated address"}
@@ -400,8 +406,8 @@ func v1_xcash_blockchain_unauthorized_address_create_integrated(c *fiber.Ctx) er
     post_data.PaymentID = RandStringBytes(ENCRYPTED_PAYMENT_ID_LENGTH);
   }
 
-  data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"make_integrated_address","params":{"standard_address":"` + post_data.Address + `", "payment_id":"` + post_data.PaymentID + `"}}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"make_integrated_address","params":{"standard_address":"` + post_data.Address + `", "payment_id":"` + post_data.PaymentID + `"}}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not create the integrated address"}
     return c.JSON(error)
   }
@@ -429,6 +435,7 @@ func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
   var sender_data string
   var receiver_data string
   var key string
+  var error error
 
   // get the resource
   if tx = c.Params("txHash"); tx == "" {
@@ -437,8 +444,8 @@ func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
   }
   
   // get info
-  data_send = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
-  if !strings.Contains(data_send, "\"status\": \"OK\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
+  if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
     error := ErrorResults{"Could not get the tx details"}
     return c.JSON(error)
   }
@@ -464,8 +471,8 @@ func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
     output.Sender = string(data2)
     
     // get the amount
-    data_send = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + output.Receiver + `"}}`)
-    if !strings.Contains(data_send, "\"result\"") {
+    data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + output.Receiver + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") || error != nil {
       error := ErrorResults{"Could not get the tx details"}
       return c.JSON(error)
     }
@@ -483,8 +490,8 @@ func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
   }
   
   // get the current block Height
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the tx details"}
     return c.JSON(error)
   }
