@@ -6,13 +6,14 @@ import (
 "io/ioutil"
 "net/http"
 "time"
+"errors"
 )
 
-func send_http_data(url string,data string) string {
+func send_http_data(url string,data string) (string, error) {
   // create the http request
   req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
   if err != nil {
-    return "error1"
+    return "",errors.New("")
   }
 
   // set the request headers  
@@ -25,7 +26,7 @@ func send_http_data(url string,data string) string {
   // send the request
   resp, err := client.Do(req)
   if err != nil {
-    return "error1"
+    return "",errors.New("")
   }
 
   // close the connection
@@ -35,5 +36,5 @@ func send_http_data(url string,data string) string {
   body, _ := ioutil.ReadAll(resp.Body)
   fmt.Printf("for %s sending %s received %s\n", url,data,body)
 
-  return string(body)
+  return string(body),nil
 }
