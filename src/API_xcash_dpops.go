@@ -92,7 +92,7 @@ func get_reserve_bytes(block_height int) string {
     // get the collection
     block_height_data := strconv.Itoa(int(((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME))+1)
     collection_number := "reserve_bytes_" + block_height_data
-    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection(collection_number)
+    collection := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection(collection_number)
 
     // get the reserve bytes
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -110,7 +110,7 @@ func get_delegate_address_from_name(delegate string) string {
   var database_data XcashDpopsDelegatesCollection
     
     // set the collection
-    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+    collection := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
 
     // get the delegates data
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -128,7 +128,7 @@ func get_delegate_name_from_address(address string) string {
   var database_data XcashDpopsDelegatesCollection
     
     // set the collection
-    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+    collection := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
 
     // get the delegates data
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -159,8 +159,8 @@ func v1_xcash_dpops_unauthorized_stats(c *fiber.Ctx) error {
   generated_supply := FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY
   
   // setup database
-  collection_delegates := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
-  collection_statistics := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("statistics")
+  collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
+  collection_statistics := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("statistics")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -229,7 +229,7 @@ func v1_xcash_dpops_unauthorized_stats(c *fiber.Ctx) error {
   // get the total voters
   total_voters = 0
   for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-    count,_ := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{}})
+    count,_ := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{}})
     total_voters += int(count)
   }
 
@@ -261,7 +261,7 @@ func v1_xcash_dpops_unauthorized_delegates_registered(c *fiber.Ctx) error {
   var err error
   
   // setup database
-  collection_delegates := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -285,7 +285,7 @@ func v1_xcash_dpops_unauthorized_delegates_registered(c *fiber.Ctx) error {
       // get the total voters for the delegates
       total_voters := 0
       for count4 := 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-        count2,_ := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
+        count2,_ := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
         total_voters += int(count2)
       }
       data.Voters = total_voters
@@ -383,7 +383,7 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
   var err error
   
   // setup database
-  collection_delegates := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -411,7 +411,7 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
       // get the total voters for the delegates
       total_voters := 0
       for count4 := 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-        count2,_ := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
+        count2,_ := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
         total_voters += int(count2)
       }
       data.Voters = total_voters
@@ -496,7 +496,7 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
   var err error
   
   // setup database
-  collection_delegates := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -520,7 +520,7 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
       // get the total voters for the delegates
       total_voters := 0
       for count4 := 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-        count2,_ := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
+        count2,_ := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",item["public_address"].(string)}})
         total_voters += int(count2)
       }
       data.Voters = total_voters
@@ -630,7 +630,7 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
   }
   
   // setup database
-  collection_delegates := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -652,7 +652,7 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
   
   // get total voters
   for count4 := 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-    count2,_ := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",database_data_delegates.PublicAddress}})
+    count2,_ := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).CountDocuments(ctx, bson.D{{"public_address_voted_for",database_data_delegates.PublicAddress}})
     total_voters += int(count2)
   }
   
@@ -874,7 +874,7 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
   defer cancel()
   
   for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-    mongo_sort, err = mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).Find(ctx, bson.D{{"public_address_voted_for",address}})
+    mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).Find(ctx, bson.D{{"public_address_voted_for",address}})
     if err != nil {
       continue
     }
@@ -929,7 +929,7 @@ func v1_xcash_dpops_unauthorized_votes(c *fiber.Ctx) error {
   
   // get the votes
   for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-    err := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).FindOne(ctx, bson.D{{"public_address_created_reserve_proof", address}}).Decode(&database_data)
+    err := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_" + string(count4)).FindOne(ctx, bson.D{{"public_address_created_reserve_proof", address}}).Decode(&database_data)
   if err == mongo.ErrNoDocuments {
     continue
   } else if err != nil {
@@ -960,7 +960,7 @@ func v1_xcash_dpops_unauthorized_rounds(c *fiber.Ctx) error {
   var str string
   
   // setup database
-  collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  collection := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
 
