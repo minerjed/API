@@ -234,6 +234,8 @@ type BlockHeaderRange struct {
 
 // API Structures
 
+// Blockchain
+
 type v1XcashBlockchainUnauthorizedStats struct {
 	Height                 int `json:"height"`
 	Hash                   string `json:"hash"`
@@ -286,6 +288,8 @@ type v1XcashBlockchainUnauthorizedTxTxHash struct {
 	Receiver      string `json:"receiver"`
 	Amount        int64    `json:"amount"`
 }
+
+// XCASH DPOPS
 
 type v1XcashDpopsUnauthorizedStats struct {
 	MostTotalRoundsDelegateName                   string `json:"mostTotalRoundsDelegateName"`
@@ -372,9 +376,59 @@ type v1XcashDpopsUnauthorizedLastBlockProducer struct {
 	LastBlockProducer string `json:"lastBlockProducer"`
 }
 
+// XCASH Namespace
+type v1XcashNamespaceUnauthorizedStats struct {
+	TotalNamesRegisteredOrRenewed int `json:"totalNamesRegisteredOrRenewed"`
+	TotalVolume                   int64 `json:"totalVolume"`
+}
+
+type v1XcashNamespaceUnauthorizedDelegatesRegistered struct {
+	DelegateName  string `json:"delegateName"`
+	PublicAddress string `json:"publicAddress"`
+	Amount        int64    `json:"amount"`
+}
+
+type v1XcashNamespaceUnauthorizedDelegatesDelegateName struct {
+	DelegateName                  string `json:"delegateName"`
+	PublicAddress                 string `json:"publicAddress"`
+	Amount                        int64    `json:"amount"`
+	TotalNamesRegisteredOrRenewed int    `json:"totalNamesRegisteredOrRenewed"`
+	TotalVolume                   int64    `json:"totalVolume"`
+}
+
+type v1XcashNamespaceUnauthorizedNamesName struct {
+	Address        string `json:"address"`
+	Saddress       string `json:"saddress"`
+	Paddress       string `json:"paddress"`
+	Expires        int    `json:"expires"`
+	DelegateName   string `json:"delegateName"`
+	DelegateAmount int64    `json:"delegateAmount"`
+}
+
+type v1XcashNamespaceUnauthorizedNamesStatusName struct {
+	Status bool `json:"status"`
+}
+
+type v1XcashNamespaceUnauthorizedNamesStatusAddress struct {
+	Status string `json:"status"`
+}
+
+type v1XcashNamespaceUnauthorizedNamesConvertName struct {
+	Address  string `json:"address"`
+	Saddress string `json:"saddress"`
+	Paddress string `json:"paddress"`
+}
+
+type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
+	Name      string `json:"name"`
+	Extension string `json:"extension"`
+}
+
 
 
 // Database
+
+// XCASH DPOPS
 type XcashDpopsReserveProofsCollection struct {
 	ID                               string `bson:"_id"`
 	PublicAddressCreatedReserveProof string `bson:"public_address_created_reserve_proof"`
@@ -421,6 +475,32 @@ type XcashDpopsStatisticsCollection struct {
 	BestBlockVerifierOnlinePercentage             string `bson:"best_block_verifier_online_percentage"`
 	MostBlockProducerTotalRoundsDelegateName      string `bson:"most_block_producer_total_rounds_delegate_name"`
 	MostBlockProducerTotalRounds                  string `bson:"most_block_producer_total_rounds"`
+}
+
+// XCASH Namespace
+type XcashDpopsRemoteDataDelegatesCollection struct {
+	ID                           string `bson:"_id"`
+	Name                         string `bson:"name"`
+	PublicAddress                string `bson:"public_address"`
+	Amount                       string `bson:"amount"`
+	TotalRegisteredRenewedAmount string `bson:"total_registered_renewed_amount"`
+	TotalAmount                  string `bson:"total_amount"`
+}
+
+type XcashDpopsRemoteDataCollection struct {
+	ID                     string `bson:"_id"`
+	Name                   string `bson:"name"`
+	Address                string `bson:"address"`
+	Saddress               string `bson:"saddress"`
+	Paddress               string `bson:"paddress"`
+	SaddressList           string `bson:"saddress_list"`
+	PaddressList           string `bson:"paddress_list"`
+	Website                string `bson:"website"`
+	SmartContractHash      string `bson:"smart_contract_hash"`
+	Timestamp              string `bson:"timestamp"`
+	ReserveDelegateAddress string `bson:"reserve_delegate_address"`
+	ReserveDelegateAmount  string `bson:"reserve_delegate_amount"`
+	TxHash                 string `bson:"tx_hash"`
 }
 
 
