@@ -157,6 +157,7 @@ func v1_xcash_dpops_unauthorized_stats(c *fiber.Ctx) error {
   var mongo_results []bson.M
   var total_voters int
   generated_supply := FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY
+  var error error
   
   // setup database
   collection_delegates := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("delegates")
@@ -165,8 +166,8 @@ func v1_xcash_dpops_unauthorized_stats(c *fiber.Ctx) error {
   defer cancel()
   
   // get the current block Height
-  data_send = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
-  if !strings.Contains(data_send, "\"result\"") {
+  data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block_count"}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
     error := ErrorResults{"Could not get the xcash dpops statistics"}
     return c.JSON(error)
   }
