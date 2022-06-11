@@ -5,6 +5,7 @@ import (
 "strconv"
 "sort"
 "context"
+"encoding/hex"
 "encoding/json"
 "time"
 "github.com/gofiber/fiber/v2"
@@ -12,13 +13,142 @@ import (
 "go.mongodb.org/mongo-driver/bson"
 )
 
+func varint_decode(s string) int64 {
+  // Variables
+  var varint int64
+  var length int = 0
+  var count int = 0
+  var counter int = 0
+  var bytecount int = 0
+  var number int64 = 1
+  var start int = 0
+  const BITS_IN_BYTE = 8
+  
+  // convert the string to decimal
+  varint, _ = strconv.ParseInt(s, 16, 64)
+
+  // get the length
+  if (varint <= 0xFF) {
+    return varint;
+  } else if (varint > 0xFF && varint < 0xFFFF) {
+    length = 2;
+  } else if (varint >= 0xFFFF && varint < 0xFFFFFF) {
+    length = 3;
+  } else if (varint >= 0xFFFFFF && varint < 0xFFFFFFFF) {
+    length = 4;
+  } else if (varint >= 0xFFFFFFFF && varint < 0xFFFFFFFFFF) {
+    length = 5;
+  } else if (varint >= 0xFFFFFFFFFF && varint < 0xFFFFFFFFFFFF) {
+    length = 6;
+  } else if (varint >= 0xFFFFFFFFFFFF && varint < 0xFFFFFFFFFFFFFF) {
+    length = 7;
+  } else {
+    length = 8;
+  }
+
+  // create a byte array for the varint
+  bytes := make([]int8, length)
+
+  for count = 0; count < length; count++ {
+    // convert each byte to binary and read the bytes in reverse order
+    bytes[count] = int8(((varint >> (BITS_IN_BYTE * uint(count))) & 0xFF))
+  }
+  
+  counter = (BITS_IN_BYTE-1)
+  bytecount = 0
+  start = 0
+    
+  for count = 0; count < length * BITS_IN_BYTE; count++ {
+    // loop through each bit until you find the first 1. for every bit after this:
+    // if 0 then number = number * 2;
+    // if 1 then number = (number * 2) + 1;
+    // dont use the bit if its the first bit
+    if counter != (BITS_IN_BYTE-1) {
+      if (bytes[bytecount] & (1 << uint(counter))) != 0 {
+        if start == 1 {
+          number = (number * 2) + 1;
+        }
+        start = 1;
+      } else {
+        if start == 1 {
+          number = number * 2;
+        }
+      } 
+    }
+      
+    if counter == 0 {
+      counter = (BITS_IN_BYTE-1);
+      bytecount++;
+    } else {
+      counter--;
+    }
+  }
+ return number;    
+}
+
+func get_reserve_bytes(block_height int) string {
+  var database_data XcashDpopsReserveBytesCollection
+    
+    // get the collection
+    block_height_data := strconv.Itoa(int(((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME))+1)
+    collection_number := "reserve_bytes_" + block_height_data
+    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection(collection_number)
+
+    // get the reserve bytes
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    err := collection.FindOne(ctx, bson.D{{"block_height", strconv.Itoa(block_height)}}).Decode(&database_data)
+    if err == mongo.ErrNoDocuments {
+      return ""
+    } else if err != nil {
+      return ""
+    }
+    return database_data.ReserveBytes
+}
+
+func get_delegate_address_from_name(delegate string) string {
+  var database_data XcashDpopsDelegatesCollection
+    
+    // set the collection
+    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+
+    // get the delegates data
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    err := collection.FindOne(ctx, bson.D{{"delegate_name",delegate}}).Decode(&database_data)
+    if err == mongo.ErrNoDocuments {
+      return ""
+    } else if err != nil {
+      return ""
+    }
+    return database_data.PublicAddress
+}
+
+func get_delegate_name_from_address(address string) string {
+  var database_data XcashDpopsDelegatesCollection
+    
+    // set the collection
+    collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+
+    // get the delegates data
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    err := collection.FindOne(ctx, bson.D{{"public_address",address}}).Decode(&database_data)
+    if err == mongo.ErrNoDocuments {
+      return ""
+    } else if err != nil {
+      return ""
+    }
+    return database_data.DelegateName
+}
+
 func v1_xcash_dpops_unauthorized_stats(c *fiber.Ctx) error {
 
   // Variables
   var data_send string
   var database_data_statistics XcashDpopsStatisticsCollection
   var data_read_1 CurrentBlockHeight
-  var output v1XcashDpopsUnauthorizedStats;
+  var output v1XcashDpopsUnauthorizedStats
   var count int64
   var count5 int
   var count4 int
@@ -638,6 +768,254 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
   output.TotalRounds,_ = strconv.Atoi(database_data_delegates.BlockVerifierTotalRounds)
   output.TotalBlockProducerRounds,_ = strconv.Atoi(database_data_delegates.BlockProducerTotalRounds)
   output.OnlinePercentage,_ = strconv.Atoi(database_data_delegates.BlockVerifierOnlinePercentage)
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_dpops_unauthorized_delegates_rounds(c *fiber.Ctx) error {
+
+  // Variables
+  var output v1XcashDpopsUnauthorizedDelegatesRounds
+  var delegate string
+  var start int
+  var limit int
+  var block_height int
+  var count int
+  var total_blocks int = 0
+  var length int
+  var time string
+  var reward string
+
+  // get the resource
+  if delegate = c.Params("delegateName"); delegate == "" {
+    error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+  }
+  
+  if start,_ = strconv.Atoi(c.Params("start")); c.Params("start") == "" || start < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT {
+    error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+  }
+  
+  if limit,_ = strconv.Atoi(c.Params("limit")); c.Params("limit") == "" || limit > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME {
+    error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+  }
+  
+  // get the previous block Height
+  if block_height = get_current_block_height(); block_height == 0 {
+     error := ErrorResults{"Could not get the delegate round details"}
+     return c.JSON(error)
+  }
+  
+  if start + limit >= block_height {
+    limit = block_height - start
+  }
+  
+  limit = start + limit
+  
+  for count = start; count < limit; count++ {
+    s := get_reserve_bytes(count)
+    if s == "" {
+      continue
+    }
+    
+    // check if this is a block this delegate foundation
+    delegate_name := s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START)+len(BLOCKCHAIN_RESERVED_BYTES_START):strings.Index(s, BLOCKCHAIN_DATA_SEGMENT_STRING)]
+    delegate_name_data,_ := hex.DecodeString(delegate_name)
+    if string(delegate_name_data) != delegate {
+      continue
+    }
+    
+    length = len(s) - (len(s) - strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 106 - 142
+
+	  time = s[4:14]
+	  reward = s[106 : 106+length]
+    
+    total_blocks++
+    output.BlocksProduced = append(output.BlocksProduced, BlocksProduced{count,varint_decode(reward),int(varint_decode(time))})
+  }
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
+
+  // Variables
+  output:=[]*v1XcashDpopsUnauthorizedDelegatesVotes{}
+  var mongo_sort *mongo.Cursor
+  var delegate string
+  var count4 int
+  var start int
+  var limit int
+  var err error
+  
+  // get the resource
+  if delegate = c.Params("delegateName"); delegate == "" {
+    error := ErrorResults{"Could not get the delegate vote details"}
+    return c.JSON(error)
+  }
+  
+  if start,_ = strconv.Atoi(c.Params("start")); c.Params("start") == "" || start < 0 {
+    error := ErrorResults{"Could not get the delegate vote details"}
+    return c.JSON(error)
+  }
+  
+  if limit,_ = strconv.Atoi(c.Params("limit")); c.Params("limit") == "" || limit > MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE {
+    error := ErrorResults{"Could not get the delegate vote details"}
+    return c.JSON(error)
+  }
+  
+  // get the delegates PublicAddress 
+  address := get_delegate_address_from_name(delegate)
+  
+  // setup database
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  
+  for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
+    mongo_sort, err = mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).Find(ctx, bson.D{{"public_address_voted_for",address}})
+    if err != nil {
+      continue
+    }
+  
+    var mongo_results []bson.M
+    if err = mongo_sort.All(ctx, &mongo_results); err != nil {
+      continue
+    }
+  
+    for _, item := range mongo_results {
+      // fill in the data
+      data:=new(v1XcashDpopsUnauthorizedDelegatesVotes)
+      data.PublicAddress = item["public_address_created_reserve_proof"].(string)
+      data.ReserveProof = item["reserve_proof"].(string)
+      data.Amount,_ = strconv.ParseInt(item["total"].(string),10,64)
+      output=append(output,data)
+	  }
+  
+  }
+	
+	// sort the arrray by vote total
+	sort.Slice(output[:], func(i, j int) bool {
+        return output[i].Amount > output[j].Amount
+    })
+    
+    // only return the start and limit
+    if limit > len(output) {
+      limit = len(output)
+    }
+    output = output[start:limit]
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_dpops_unauthorized_votes(c *fiber.Ctx) error {
+
+  // Variables
+  var output v1XcashDpopsUnauthorizedVotes
+  var address string
+  var database_data XcashDpopsReserveProofsCollection
+  var count4 int
+  
+  // setup database
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+
+  // get the resource
+  if address = c.Params("address"); address == "" || address[0:len(XCASH_WALLET_PREFIX)] != XCASH_WALLET_PREFIX || len(address) != XCASH_WALLET_LENGTH {
+    error := ErrorResults{"Could not get the vote details"}
+    return c.JSON(error)
+  }
+  
+  // get the votes
+  for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
+    err := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("reserve_proofs_" + string(count4)).FindOne(ctx, bson.D{{"public_address_created_reserve_proof", address}}).Decode(&database_data)
+  if err == mongo.ErrNoDocuments {
+    continue
+  } else if err != nil {
+    continue
+  }
+  }
+  
+  if database_data.PublicAddressVotedFor == "" {
+    error := ErrorResults{"This address has not voted"}
+    return c.JSON(error)
+  }
+  
+  // fill in the data
+  output.DelegateName = get_delegate_name_from_address(database_data.PublicAddressVotedFor)
+  output.Amount,_ = strconv.ParseInt(database_data.Total, 10, 64)
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_dpops_unauthorized_rounds(c *fiber.Ctx) error {
+
+  // Variables
+  var output v1XcashDpopsUnauthorizedRounds
+  var database_data XcashDpopsDelegatesCollection
+  var block_height int
+  var count int
+  var data []string
+  var str string
+  
+  // setup database
+  collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection("delegates")
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+
+  // get the resource
+  if block_height,_ = strconv.Atoi(c.Params("blockHeight")); c.Params("blockHeight") == "" {
+    error := ErrorResults{"Could not get the round details"}
+    return c.JSON(error)
+  }
+  
+  // get all of the public keys in the block
+  s := get_reserve_bytes(block_height)
+  if s == "" {
+    error := ErrorResults{"Could not get the round details"}
+    return c.JSON(error)
+  }
+  s = s[strings.Index(s,BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA)+len(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA):len(s)]
+  
+  for count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++ {
+    str = s[0:PUBLIC_KEY_LENGTH*2]
+    data5, _ := hex.DecodeString(str)
+    str = string(data5)
+    data = append(data,str)
+    s = s[(PUBLIC_KEY_LENGTH*2)+len(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA):len(s)]
+  }
+  
+  // convert the public keys to public addresses
+  for _, item := range data {
+        // get the delegate name
+    err := collection.FindOne(ctx, bson.D{{"public_key", item}}).Decode(&database_data)
+    if err == mongo.ErrNoDocuments {
+      output.Delegates = append(output.Delegates, "DELEGATE_REMOVED")
+      continue
+    } else if err != nil {
+      continue
+    }
+    output.Delegates = append(output.Delegates, database_data.DelegateName)
+    }
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_dpops_unauthorized_last_block_producer(c *fiber.Ctx) error {
+
+  // Variables
+  var output v1XcashDpopsUnauthorizedLastBlockProducer
+  var block_height int
+  
+  // get the previous block Height
+  if block_height = get_current_block_height(); block_height == 0 {
+     error := ErrorResults{"Could not get the last block producer"}
+     return c.JSON(error)
+  }
+  
+  // fill in the data
+  output.LastBlockProducer = get_block_delegate(block_height-1)
     
   return c.JSON(output)
 }
