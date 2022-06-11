@@ -62,6 +62,16 @@ func main() {
   app.Get("/v1/xcash/dpops/unauthorized/votes/:address",v1_xcash_dpops_unauthorized_votes)
   app.Get("/v1/xcash/dpops/unauthorized/rounds/:blockHeight",v1_xcash_dpops_unauthorized_rounds)
   app.Get("/v1/xcash/dpops/unauthorized/lastBlockProducer",v1_xcash_dpops_unauthorized_last_block_producer)
+  
+  // setup xcash namespace routes
+  app.Get("/v1/xcash/namespace/unauthorized/stats/",v1_xcash_namespace_unauthorized_stats)
+  app.Get("/v1/xcash/namespace/unauthorized/delegates/registered",v1_xcash_namespace_unauthorized_delegates_registered)
+  app.Get("/v1/xcash/namespace/unauthorized/delegates/:delegateName",v1_xcash_namespace_unauthorized_delegates_delegate_name)
+  app.Get("/v1/xcash/namespace/unauthorized/names/:name",v1_xcash_namespace_unauthorized_names_name)
+  /*app.Get("/v1/xcash/namespace/unauthorized/names/status/:name",v1_xcash_namespace_unauthorized_names_status_name)
+  app.Get("/v1/xcash/namespace/unauthorized/names/status/:address",v1_xcash_namespace_unauthorized_names_status_address)
+  app.Get("/v1/xcash/namespace/unauthorized/names/convert/:name",v1_xcash_namespace_unauthorized_names_convert_name)
+  app.Get("/v1/xcash/namespace/unauthorized/names/convert/:address",v1_xcash_namespace_unauthorized_names_convert_address)*/
 
 
   // setup global routes
