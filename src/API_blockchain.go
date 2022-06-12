@@ -211,7 +211,7 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   output.TotalPrivateTx,_ = strconv.Atoi(database_data.Private)
   output.CirculatingSupply = circulating_supply
   output.GeneratedSupply = int64(generated_supply)
-  output.TotalSupply = XCASH_TOTAL_SUPPLY
+  output.TotalSupply = XCASH_TOTAL_SUPPLY * XCASH_WALLET_DECIMAL_PLACES_AMOUNT
   output.EmissionReward = EMISSION_BLOCK_REWARD
   output.EmissionHeight = emission_height
   output.EmissionTime = emission_time
