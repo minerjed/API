@@ -275,6 +275,16 @@ type v1XcashBlockchainUnauthorizedAddressProve struct {
 	Amount       int64 `json:"amount"`
 }
 
+type v1XcashBlockchainUnauthorizedAddressHistory struct {
+	Tx       string `json:"tx"`
+	Key      string `json:"key"`
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	Amount   int64   `json:"amount"`
+	Height   int    `json:"height"`
+	Time     int    `json:"time"`
+}
+
 type v1XcashBlockchainUnauthorizedAddressCreateIntegrated struct {
 	IntegratedAddress string `json:"integratedAddress"`
 	PaymentID         string `json:"paymentId"`
@@ -430,7 +440,7 @@ type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
 }
 
 // Xpayment
-type v1_xpayment_unauthorized_user_stats struct {
+type v1XpaymentUnauthorizedUserStats struct {
 	TotalSentTips        int `json:"totalSentTips"`
 	TotalReceivedTips    int `json:"totalReceivedTips"`
 	TotalPublicSentTips  int `json:"totalPublicSentTips"`
@@ -439,7 +449,7 @@ type v1_xpayment_unauthorized_user_stats struct {
 	TotalWithdraws       int `json:"totalWithdraws"`
 }
 
-type v1_xpayment_unauthorized_stats struct {
+type v1XpaymentUnauthorizedStats struct {
 	TotalUsers            int `json:"totalUsers"`
 	TotalTipsPublic       int `json:"totalTipsPublic"`
 	TotalTipsPrivate      int `json:"totalTipsPrivate"`
@@ -453,13 +463,13 @@ type v1_xpayment_unauthorized_stats struct {
 	TotalWithdraws        int `json:"totalWithdraws"`
 }
 
-type v1_xpayment_unauthorized_statsperday []struct {
+type v1XpaymentUnauthorizedStatsperday []struct {
 	Time   int `json:"time"`
 	Amount int `json:"amount"`
 	Volume int `json:"volume"`
 }
 
-type v1_xpayment_unauthorized_topstats struct {
+type v1XpaymentUnauthorizedTopstats struct {
 	TopTips []struct {
 		Username string `json:"username"`
 		Tips     int    `json:"tips"`
@@ -470,7 +480,7 @@ type v1_xpayment_unauthorized_topstats struct {
 	} `json:"topVolumes"`
 }
 
-type v1_xpayment_unauthorized_recent_tips []struct {
+type v1XpaymentUnauthorizedRecentTips []struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	ToUser   string `json:"toUser"`
@@ -479,7 +489,7 @@ type v1_xpayment_unauthorized_recent_tips []struct {
 	Type     string `json:"type"`
 }
 
-type v1_xpayment_unauthorized_tips []struct {
+type v1XpaymentUnauthorizedTips []struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	FromID   string `json:"fromId"`
@@ -491,7 +501,7 @@ type v1_xpayment_unauthorized_tips []struct {
 }
 
 // Xpayment Twitter 
-type v1_xpayment_twitter_unauthorized_user_stats struct {
+type v1XpaymentTwitterUnauthorizedUserStats struct {
 	TotalSentTips        int `json:"totalSentTips"`
 	TotalReceivedTips    int `json:"totalReceivedTips"`
 	TotalPublicSentTips  int `json:"totalPublicSentTips"`
@@ -500,7 +510,7 @@ type v1_xpayment_twitter_unauthorized_user_stats struct {
 	TotalWithdraws       int `json:"totalWithdraws"`
 }
 
-type v1_xpayment_twitter_unauthorized_stats struct {
+type v1XpaymentTwitterUnauthorizedStats struct {
 	TotalUsers            int `json:"totalUsers"`
 	TotalTipsPublic       int `json:"totalTipsPublic"`
 	TotalTipsPrivate      int `json:"totalTipsPrivate"`
@@ -514,13 +524,13 @@ type v1_xpayment_twitter_unauthorized_stats struct {
 	TotalWithdraws        int `json:"totalWithdraws"`
 }
 
-type v1_xpayment_twitter_unauthorized_statsperday []struct {
+type v1XpaymentTwitterUnauthorizedStatsperday []struct {
 	Time   int `json:"time"`
 	Amount int `json:"amount"`
 	Volume int `json:"volume"`
 }
 
-type v1_xpayment_twitter_unauthorized_topstats struct {
+type v1XpaymentTwitterUnauthorizedTopstats struct {
 	TopTips []struct {
 		Username string `json:"username"`
 		Tips     int    `json:"tips"`
@@ -531,7 +541,7 @@ type v1_xpayment_twitter_unauthorized_topstats struct {
 	} `json:"topVolumes"`
 }
 
-type v1_xpayment_twitter_unauthorized_recent_tips []struct {
+type v1XpaymentTwitterUnauthorizedRecentTips []struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	ToUser   string `json:"toUser"`
@@ -540,7 +550,7 @@ type v1_xpayment_twitter_unauthorized_recent_tips []struct {
 	Type     string `json:"type"`
 }
 
-type v1_xpayment_twitter_unauthorized_tips []struct {
+type v1XpaymentTwitterUnauthorizedTips []struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	FromID   string `json:"fromId"`
