@@ -4,6 +4,7 @@ import (
 "fmt"
 "math/rand"
 "strings"
+"sort"
 "context"
 "strconv"
 "os"
@@ -392,6 +393,63 @@ func v1_xcash_blockchain_unauthorized_address_prove(c *fiber.Ctx) error {
 
   // fill in the data
   output.Amount = amount
+    
+  return c.JSON(output)
+}
+
+func v1_xcash_blockchain_unauthorized_address_history(c *fiber.Ctx) error {
+
+  // Variables
+  output:=[]*v1XcashBlockchainUnauthorizedAddressHistory{}
+  var mongo_sort *mongo.Cursor
+  var address string
+  var settings string
+  var err error
+  
+  // get the resource
+  if settings = c.Params("type"); settings != "sender" && settings != "receiver" {
+    error := ErrorResults{"Could not get the address history"}
+    return c.JSON(error)
+  }
+  
+  if address = c.Params("address"); address == "" || len(address) != XCASH_WALLET_LENGTH || address[0:len(XCASH_WALLET_PREFIX)] != XCASH_WALLET_PREFIX  {
+    error := ErrorResults{"Could not get the address history"}
+    return c.JSON(error)
+  }
+  
+  // setup database
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  
+  mongo_sort, err = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").Find(ctx, bson.D{{settings,address}})
+  if err != nil {
+    error := ErrorResults{"Could not get the address history"}
+    return c.JSON(error)
+  }
+  
+  var mongo_results []bson.M
+  if err = mongo_sort.All(ctx, &mongo_results); err != nil {
+    error := ErrorResults{"Could not get the address history"}
+    return c.JSON(error)
+  }
+  
+  for _, item := range mongo_results {
+    // fill in the data
+    data:=new(v1XcashBlockchainUnauthorizedAddressHistory)
+    data.Tx = item["tx"].(string)
+    data.Key = item["key"].(string)
+    data.Sender,_ = item["sender"].(string)
+    data.Receiver,_ = item["receiver"].(string)
+    data.Amount,_ = strconv.ParseInt(item["amount"].(string),10,64)
+    data.Height,_ = strconv.Atoi(item["height"].(string))
+    data.Time,_ = strconv.Atoi(item["time"].(string))
+    output=append(output,data)
+  }
+	
+	// sort the arrray by time
+	sort.Slice(output[:], func(i, j int) bool {
+        return output[i].Time > output[j].Time
+    })
     
   return c.JSON(output)
 }
