@@ -344,6 +344,10 @@ type v1XcashDpopsUnauthorizedDelegatesData struct {
 }
 
 type v1XcashDpopsUnauthorizedDelegatesRounds struct {
+	TotalBlocksProduced int `json:"totalBlocksProduced"`
+	TotalBlockRewards   int64 `json:"totalBlockRewards"`
+	AveragePercentage   int `json:"averagePercentage"`
+	AverageTime         int `json:"averageTime"`
 	BlocksProduced      []struct {
 		BlockHeight int `json:"blockHeight"`
 		BlockReward int64 `json:"blockReward"`
