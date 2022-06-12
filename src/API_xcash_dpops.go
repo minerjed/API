@@ -778,14 +778,11 @@ func v1_xcash_dpops_unauthorized_delegates_rounds(c *fiber.Ctx) error {
   // Variables
   var output v1XcashDpopsUnauthorizedDelegatesRounds
   var delegate string
-  var start int
-  var limit int
-  var block_height int
-  var count int
-  var total_blocks int = 0
-  var length int
-  var time string
-  var reward string
+  var current_block_height int
+  var mongo_sort *mongo.Cursor
+  var error error
+  var totalBlocksProduced int = 0
+  var totalBlockRewards int64 = 0
 
   // get the resource
   if delegate = c.Params("delegateName"); delegate == "" {
@@ -793,49 +790,46 @@ func v1_xcash_dpops_unauthorized_delegates_rounds(c *fiber.Ctx) error {
     return c.JSON(error)
   }
   
-  if start,_ = strconv.Atoi(c.Params("start")); c.Params("start") == "" || start < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT {
-    error := ErrorResults{"Could not get the delegate round details"}
-    return c.JSON(error)
-  }
-  
-  if limit,_ = strconv.Atoi(c.Params("limit")); c.Params("limit") == "" || limit > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME {
-    error := ErrorResults{"Could not get the delegate round details"}
-    return c.JSON(error)
-  }
-  
   // get the previous block Height
-  if block_height = get_current_block_height(); block_height == 0 {
+  if current_block_height = get_current_block_height(); current_block_height == 0 {
      error := ErrorResults{"Could not get the delegate round details"}
-     return c.JSON(error)
+    return c.JSON(error)
   }
+  current_block_height -= 1
+  current_block_height -= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
   
-  if start + limit >= block_height {
-    limit = block_height - start
-  }
+  // setup database
+  collection := mongoClient.Database(XCASH_API_DATABASE).Collection("blocks")
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
   
-  limit = start + limit
+  mongo_sort, error = collection.Find(ctx, bson.D{{"delegate",delegate}})
+    if error != nil {
+      error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+    }
   
-  for count = start; count < limit; count++ {
-    s := get_reserve_bytes(count)
-    if s == "" {
-      continue
+    var mongo_results []bson.M
+    if error = mongo_sort.All(ctx, &mongo_results); error != nil {
+      error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+    }
+  
+    for _, item := range mongo_results {
+        height,_ := strconv.Atoi(item["height"].(string))
+        reward,_ := strconv.ParseInt(item["reward"].(string),10,64)
+        timestamp,_ := strconv.Atoi(item["time"].(string))
+        output.BlocksProduced = append(output.BlocksProduced, BlocksProduced{height,reward,timestamp})
+        
+        totalBlocksProduced++
+        totalBlockRewards += reward
     }
     
-    // check if this is a block this delegate foundation
-    delegate_name := s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START)+len(BLOCKCHAIN_RESERVED_BYTES_START):strings.Index(s, BLOCKCHAIN_DATA_SEGMENT_STRING)]
-    delegate_name_data,_ := hex.DecodeString(delegate_name)
-    if string(delegate_name_data) != delegate {
-      continue
-    }
-    
-    length = len(s) - (len(s) - strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 106 - 142
-
-	  time = s[4:14]
-	  reward = s[106 : 106+length]
-    
-    total_blocks++
-    output.BlocksProduced = append(output.BlocksProduced, BlocksProduced{count,varint_decode(reward),int(varint_decode(time))})
-  }
+    // fill in the data
+    output.TotalBlocksProduced = totalBlocksProduced
+    output.TotalBlockRewards = totalBlockRewards
+    output.AveragePercentage = int((float64(current_block_height)) / (float64(totalBlocksProduced * (BLOCK_VERIFIERS_AMOUNT - 5))) * 100)
+    output.AverageTime = int(float64((current_block_height * XCASH_DPOPS_BLOCK_TIME)) / float64(totalBlocksProduced))
     
   return c.JSON(output)
 }
