@@ -244,7 +244,8 @@ type v1XcashBlockchainUnauthorizedStats struct {
 	Version                int `json:"version"`
 	VersionBlockHeight     int `json:"versionBlockHeight"`
 	NextVersionBlockHeight int `json:"nextVersionBlockHeight"`
-	TotalTx                int `json:"totalTx"`
+	TotalPublicTx                int `json:"totalPublicTx"`
+	TotalPrivateTx                int `json:"totalPrivateTx"`
 	CirculatingSupply      int64 `json:"circulatingSupply"`
 	GeneratedSupply        int64 `json:"generatedSupply"`
 	TotalSupply            int64 `json:"totalSupply"`
@@ -505,6 +506,13 @@ type XcashDpopsRemoteDataCollection struct {
 	ReserveDelegateAddress string `bson:"reserve_delegate_address"`
 	ReserveDelegateAmount  string `bson:"reserve_delegate_amount"`
 	TxHash                 string `bson:"tx_hash"`
+}
+
+// API
+type XcashAPIStatisticsCollection struct {
+	ID                     string `bson:"_id"`
+	Public                 string `bson:"public"`
+	Private                string `bson:"private"`
 }
 
 
