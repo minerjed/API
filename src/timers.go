@@ -31,7 +31,6 @@ func timers_build_data() {
         }
     }
 
-
 func process_block_data() {
 
   // Variables
@@ -47,6 +46,8 @@ func process_block_data() {
   var data_read_1 TxData
   var error error
   var database_data XcashAPIStatisticsCollection
+  var data_read_2 CheckTxKey
+  var amount int64
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -102,6 +103,34 @@ func process_block_data() {
       public_tx_count++
       
       // parse the public tx
+      data := data_read_1.TxsAsHex[0][strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_PREFIX)+len(PUBLIC_TX_PREFIX):]
+      key := data[0:PUBLIC_KEY_LENGTH]
+      data = data[PUBLIC_KEY_LENGTH+202:]
+      sender := data[0:XCASH_WALLET_LENGTH*2]
+      data = data[(XCASH_WALLET_LENGTH*2)+8:]
+      receiver := data[0:XCASH_WALLET_LENGTH*2]
+     
+      sender_data,_ := hex.DecodeString(sender)
+      receiver_data,_ := hex.DecodeString(receiver)
+      
+      sender = string(sender_data)
+      receiver = string(receiver_data)
+      
+      // get the amount
+      data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + receiver + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") || error != nil {
+      return
+    }
+    if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
+      return
+    }
+    
+    amount = data_read_2.Result.Received
+    
+    // save the public tx in the Database
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)}})
+      
+      
   } else {
       private_tx_count++
   }
@@ -135,6 +164,8 @@ func process_block_data_build_data(block_height int) {
   var data_read_1 TxData
   var error error
   var database_data XcashAPIStatisticsCollection
+  var data_read_2 CheckTxKey
+  var amount int64
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -184,6 +215,34 @@ func process_block_data_build_data(block_height int) {
       public_tx_count++
       
       // parse the public tx
+      data := data_read_1.TxsAsHex[0][strings.Index(data_read_1.TxsAsHex[0], PUBLIC_TX_PREFIX)+len(PUBLIC_TX_PREFIX):]
+      key := data[0:PUBLIC_KEY_LENGTH]
+      data = data[PUBLIC_KEY_LENGTH+202:]
+      sender := data[0:XCASH_WALLET_LENGTH*2]
+      data = data[(XCASH_WALLET_LENGTH*2)+8:]
+      receiver := data[0:XCASH_WALLET_LENGTH*2]
+     
+      sender_data,_ := hex.DecodeString(sender)
+      receiver_data,_ := hex.DecodeString(receiver)
+      
+      sender = string(sender_data)
+      receiver = string(receiver_data)
+      
+      // get the amount
+      data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + receiver + `"}}`)
+    if !strings.Contains(data_send, "\"result\"") || error != nil {
+      return
+    }
+    if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
+      return
+    }
+    
+    amount = data_read_2.Result.Received
+    
+    // save the public tx in the Database
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)}})
+      
+      
   } else {
       private_tx_count++
   }
