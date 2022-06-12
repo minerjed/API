@@ -94,7 +94,7 @@ func process_block_data() {
   }
       }
   }
-  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"producer", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
  
   fmt.Println(block_height)
    fmt.Println(delegate)
@@ -163,15 +163,13 @@ func process_block_data_build_data(block_height int) {
   }
   
   // save the block to the database
-  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"producer", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
   
   fmt.Println(block_height)
    fmt.Println(delegate)
    fmt.Println(timestamp)
    fmt.Println(reward)
    fmt.Println(public_tx_count)
-    
-  return
     
   return
 }
