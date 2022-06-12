@@ -429,6 +429,128 @@ type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
 	Extension string `json:"extension"`
 }
 
+// Xpayment
+type v1_xpayment_unauthorized_user_stats struct {
+	TotalSentTips        int `json:"totalSentTips"`
+	TotalReceivedTips    int `json:"totalReceivedTips"`
+	TotalPublicSentTips  int `json:"totalPublicSentTips"`
+	TotalPrivateSentTips int `json:"totalPrivateSentTips"`
+	TotalDeposits        int `json:"totalDeposits"`
+	TotalWithdraws       int `json:"totalWithdraws"`
+}
+
+type v1_xpayment_unauthorized_stats struct {
+	TotalUsers            int `json:"totalUsers"`
+	TotalTipsPublic       int `json:"totalTipsPublic"`
+	TotalTipsPrivate      int `json:"totalTipsPrivate"`
+	TotalVolumeSent       int `json:"totalVolumeSent"`
+	AvgTipAmount          int `json:"avgTipAmount"`
+	TipsSentLastHour      int `json:"tipsSentLastHour"`
+	TipsSentLast24Hours   int `json:"tipsSentLast24Hours"`
+	VolumeSentLastHour    int `json:"volumeSentLastHour"`
+	VolumeSentLast24Hours int `json:"volumeSentLast24Hours"`
+	TotalDeposits         int `json:"totalDeposits"`
+	TotalWithdraws        int `json:"totalWithdraws"`
+}
+
+type v1_xpayment_unauthorized_statsperday []struct {
+	Time   int `json:"time"`
+	Amount int `json:"amount"`
+	Volume int `json:"volume"`
+}
+
+type v1_xpayment_unauthorized_topstats struct {
+	TopTips []struct {
+		Username string `json:"username"`
+		Tips     int    `json:"tips"`
+	} `json:"topTips"`
+	TopVolumes []struct {
+		Username string `json:"username"`
+		Volume   int    `json:"volume"`
+	} `json:"topVolumes"`
+}
+
+type v1_xpayment_unauthorized_recent_tips []struct {
+	TweetID  string `json:"tweetId"`
+	FromUser string `json:"fromUser"`
+	ToUser   string `json:"toUser"`
+	Amount   int    `json:"amount"`
+	Time     int    `json:"time"`
+	Type     string `json:"type"`
+}
+
+type v1_xpayment_unauthorized_tips []struct {
+	TweetID  string `json:"tweetId"`
+	FromUser string `json:"fromUser"`
+	FromID   string `json:"fromId"`
+	ToUser   string `json:"toUser"`
+	ToID     string `json:"toId"`
+	Amount   int    `json:"amount"`
+	Time     int    `json:"time"`
+	Type     string `json:"type"`
+}
+
+// Xpayment Twitter 
+type v1_xpayment_twitter_unauthorized_user_stats struct {
+	TotalSentTips        int `json:"totalSentTips"`
+	TotalReceivedTips    int `json:"totalReceivedTips"`
+	TotalPublicSentTips  int `json:"totalPublicSentTips"`
+	TotalPrivateSentTips int `json:"totalPrivateSentTips"`
+	TotalDeposits        int `json:"totalDeposits"`
+	TotalWithdraws       int `json:"totalWithdraws"`
+}
+
+type v1_xpayment_twitter_unauthorized_stats struct {
+	TotalUsers            int `json:"totalUsers"`
+	TotalTipsPublic       int `json:"totalTipsPublic"`
+	TotalTipsPrivate      int `json:"totalTipsPrivate"`
+	TotalVolumeSent       int `json:"totalVolumeSent"`
+	AvgTipAmount          int `json:"avgTipAmount"`
+	TipsSentLastHour      int `json:"tipsSentLastHour"`
+	TipsSentLast24Hours   int `json:"tipsSentLast24Hours"`
+	VolumeSentLastHour    int `json:"volumeSentLastHour"`
+	VolumeSentLast24Hours int `json:"volumeSentLast24Hours"`
+	TotalDeposits         int `json:"totalDeposits"`
+	TotalWithdraws        int `json:"totalWithdraws"`
+}
+
+type v1_xpayment_twitter_unauthorized_statsperday []struct {
+	Time   int `json:"time"`
+	Amount int `json:"amount"`
+	Volume int `json:"volume"`
+}
+
+type v1_xpayment_twitter_unauthorized_topstats struct {
+	TopTips []struct {
+		Username string `json:"username"`
+		Tips     int    `json:"tips"`
+	} `json:"topTips"`
+	TopVolumes []struct {
+		Username string `json:"username"`
+		Volume   int    `json:"volume"`
+	} `json:"topVolumes"`
+}
+
+type v1_xpayment_twitter_unauthorized_recent_tips []struct {
+	TweetID  string `json:"tweetId"`
+	FromUser string `json:"fromUser"`
+	ToUser   string `json:"toUser"`
+	Amount   int    `json:"amount"`
+	Time     int    `json:"time"`
+	Type     string `json:"type"`
+}
+
+type v1_xpayment_twitter_unauthorized_tips []struct {
+	TweetID  string `json:"tweetId"`
+	FromUser string `json:"fromUser"`
+	FromID   string `json:"fromId"`
+	ToUser   string `json:"toUser"`
+	ToID     string `json:"toId"`
+	Amount   int    `json:"amount"`
+	Time     int    `json:"time"`
+	Type     string `json:"type"`
+}
+
 
 
 // Database
