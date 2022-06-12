@@ -8,6 +8,7 @@ import (
 "encoding/json"
 "encoding/hex"
 "time"
+"go.mongodb.org/mongo-driver/mongo"
 "go.mongodb.org/mongo-driver/bson"
 )
 
@@ -41,9 +42,11 @@ func process_block_data() {
   var timestamp int
   var reward int64
   var public_tx_count int = 0
+  var private_tx_count int = 0
   var data_send string
   var data_read_1 TxData
   var error error
+  var database_data XcashAPIStatisticsCollection
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -59,6 +62,17 @@ func process_block_data() {
     return
   }
   
+  // get the currrent tx count 
+  err := mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
+  if err == mongo.ErrNoDocuments {
+    return
+  } else if err != nil {
+    return
+  }
+  
+  public_tx_count,_ = strconv.Atoi(database_data.Public)
+  private_tx_count,_ = strconv.Atoi(database_data.Private)
+  
   // parse the reserve bytes 
   delegate = s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START)+len(BLOCKCHAIN_RESERVED_BYTES_START):strings.Index(s, BLOCKCHAIN_DATA_SEGMENT_STRING)]
   delegate_name_data,_ := hex.DecodeString(delegate)
@@ -70,13 +84,10 @@ func process_block_data() {
   reward = varint_decode(s[106 : 106+length])
   
   tx_data := s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_END)+len(BLOCKCHAIN_RESERVED_BYTES_END)+4:]
-  if len(tx_data) < TRANSACTION_HASH_LENGTH {
-      public_tx_count = 0
-  } else {
+  if len(tx_data) > TRANSACTION_HASH_LENGTH {
       for len(tx_data) >= TRANSACTION_HASH_LENGTH {
       tx := tx_data[0:TRANSACTION_HASH_LENGTH]
       tx_data = tx_data[TRANSACTION_HASH_LENGTH:]
-      fmt.Println(tx)
       // get the tx details
   data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
   if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
@@ -91,16 +102,21 @@ func process_block_data() {
       public_tx_count++
       
       // parse the public tx
+  } else {
+      private_tx_count++
   }
       }
   }
-  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"public", strconv.Itoa(public_tx_count)}}}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"private", strconv.Itoa(private_tx_count)}}}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)}})
  
   fmt.Println(block_height)
    fmt.Println(delegate)
    fmt.Println(timestamp)
    fmt.Println(reward)
    fmt.Println(public_tx_count)
+   fmt.Println(private_tx_count)
     
   return
 }
@@ -114,9 +130,11 @@ func process_block_data_build_data(block_height int) {
   var timestamp int
   var reward int64
   var public_tx_count int = 0
+  var private_tx_count int = 0
   var data_send string
   var data_read_1 TxData
   var error error
+  var database_data XcashAPIStatisticsCollection
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
   
@@ -125,6 +143,17 @@ func process_block_data_build_data(block_height int) {
   if s == "" {
     return
   }
+  
+  // get the currrent tx count 
+  err := mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
+  if err == mongo.ErrNoDocuments {
+    return
+  } else if err != nil {
+    return
+  }
+  
+  public_tx_count,_ = strconv.Atoi(database_data.Public)
+  private_tx_count,_ = strconv.Atoi(database_data.Private)
   
   // parse the reserve bytes 
   delegate = s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_START)+len(BLOCKCHAIN_RESERVED_BYTES_START):strings.Index(s, BLOCKCHAIN_DATA_SEGMENT_STRING)]
@@ -137,13 +166,10 @@ func process_block_data_build_data(block_height int) {
   reward = varint_decode(s[106 : 106+length])
   
   tx_data := s[strings.Index(s, BLOCKCHAIN_RESERVED_BYTES_END)+len(BLOCKCHAIN_RESERVED_BYTES_END)+4:]
-  if len(tx_data) < TRANSACTION_HASH_LENGTH {
-      public_tx_count = 0
-  } else {
+  if len(tx_data) > TRANSACTION_HASH_LENGTH {
       for len(tx_data) >= TRANSACTION_HASH_LENGTH {
       tx := tx_data[0:TRANSACTION_HASH_LENGTH]
       tx_data = tx_data[TRANSACTION_HASH_LENGTH:]
-      fmt.Println(tx)
       // get the tx details
   data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
   if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
@@ -158,18 +184,21 @@ func process_block_data_build_data(block_height int) {
       public_tx_count++
       
       // parse the public tx
+  } else {
+      private_tx_count++
   }
       }
   }
-  
-  // save the block to the database
-  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)},{"public_tx", strconv.Itoa(public_tx_count)}})
-  
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"public", strconv.Itoa(public_tx_count)}}}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"private", strconv.Itoa(private_tx_count)}}}})
+  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)}})
+ 
   fmt.Println(block_height)
    fmt.Println(delegate)
    fmt.Println(timestamp)
    fmt.Println(reward)
    fmt.Println(public_tx_count)
+   fmt.Println(private_tx_count)
     
   return
 }
