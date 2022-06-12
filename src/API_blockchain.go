@@ -67,7 +67,7 @@ func get_block_delegate(requestBlockHeight int) string {
   // get the collection
   block_height_data := strconv.Itoa(int(((requestBlockHeight - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME))+1)
   collection_number := "reserve_bytes_" + block_height_data
-  collection := mongoClient.Database("XCASH_PROOF_OF_STAKE").Collection(collection_number)
+  collection := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection(collection_number)
 
   // get the reserve bytes
   filter := bson.D{{"block_height", strconv.Itoa(requestBlockHeight)}}
@@ -102,6 +102,20 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   generated_supply_copy := FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY
   var reward float64
   var error error
+  var database_data XcashAPIStatisticsCollection
+  
+  // read the tx stats
+  collection := mongoClient.Database(XCASH_API_DATABASE).Collection("statistics")
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  err := collection.FindOne(ctx, bson.D{{}}).Decode(&database_data)
+  if err == mongo.ErrNoDocuments {
+    error := ErrorResults{"Could not get the stats"}
+    return c.JSON(error)
+  } else if err != nil {
+    error := ErrorResults{"Could not get the stats"}
+    return c.JSON(error)
+  }
   
   // get info
   data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
@@ -192,7 +206,8 @@ func v1_xcash_blockchain_unauthorized_stats(c *fiber.Ctx) error {
   output.Version = CURRENT_BLOCKCHAIN_VERSION
   output.VersionBlockHeight = CURRENT_BLOCKCHAIN_VERSION_HEIGHT
   output.NextVersionBlockHeight = NEXT_BLOCKCHAIN_VERSION_HEIGHT
-  output.TotalTx = data_read_1.Result.TxCount
+  output.TotalPublicTx,_ = strconv.Atoi(database_data.Public)
+  output.TotalPrivateTx,_ = strconv.Atoi(database_data.Private)
   output.CirculatingSupply = circulating_supply
   output.GeneratedSupply = int64(generated_supply)
   output.TotalSupply = XCASH_TOTAL_SUPPLY
