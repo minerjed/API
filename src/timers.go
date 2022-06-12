@@ -32,7 +32,7 @@ func timers_build_data() {
     }
 
 func process_block_data() {
-
+  
   // Variables
   var block_height int
   var s string
@@ -128,7 +128,7 @@ func process_block_data() {
     amount = data_read_2.Result.Received
     
     // save the public tx in the Database
-    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)}})
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)},{"height", strconv.Itoa(data_read_1.Txs[0].BlockHeight)},{"time", strconv.Itoa(data_read_1.Txs[0].BlockTimestamp)}})
       
       
   } else {
@@ -240,7 +240,7 @@ func process_block_data_build_data(block_height int) {
     amount = data_read_2.Result.Received
     
     // save the public tx in the Database
-    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)}})
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").InsertOne(ctx, bson.D{{"tx", tx}, {"key", key},{"sender", sender},{"receiver", receiver},{"amount", strconv.FormatInt(amount, 10)},{"height", strconv.Itoa(data_read_1.Txs[0].BlockHeight)},{"time", strconv.Itoa(data_read_1.Txs[0].BlockTimestamp)}})
       
       
   } else {
