@@ -49,6 +49,7 @@ func main() {
   app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
   app.Post("/v1/xcash/blockchain/unauthorized/tx/prove/",v1_xcash_blockchain_unauthorized_tx_prove)
   app.Post("/v1/xcash/blockchain/unauthorized/address/prove",v1_xcash_blockchain_unauthorized_address_prove)
+  app.Get("v1/xcash/blockchain/unauthorized/address/history/:type/:address",v1_xcash_blockchain_unauthorized_address_history)
   app.Post("/v1/xcash/blockchain/unauthorized/address/createIntegrated",v1_xcash_blockchain_unauthorized_address_create_integrated)
   
   // setup xcash dpops routes
@@ -97,7 +98,7 @@ func main() {
   
   // start the timers 
   //go timers()
-   go timers_build_data()
+  // go timers_build_data()
   
   // start the server
   app.Listen(":9000")
