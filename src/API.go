@@ -38,7 +38,7 @@ func main() {
         
   // setup fiber
   app := fiber.New(fiber.Config{
-    Prefork: true,
+    Prefork: false,
     DisableStartupMessage: true,
   })
 
@@ -78,6 +78,11 @@ func main() {
   app.Get("/*", func(c *fiber.Ctx) error {
     return c.SendString("Invalid API Request")
   })
- 
+  
+  // start the timers 
+  //go timers()
+  // go timers_build_data()
+  
+  // start the server
   app.Listen(":9000")
 }
