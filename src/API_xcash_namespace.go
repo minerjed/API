@@ -3,6 +3,7 @@ package main
 import (
 "strings"
 "strconv"
+"regexp"
 "sort"
 "context"
 "time"
@@ -178,6 +179,7 @@ func v1_xcash_namespace_unauthorized_names_status_name(c *fiber.Ctx) error {
   var output v1XcashNamespaceUnauthorizedNamesStatusName
   var database_data XcashDpopsRemoteDataCollection
   var name string
+  var valid_name = regexp.MustCompile(VALID_NAME_DATA).MatchString
   
   // setup database
   collection := mongoClient.Database(XCASH_NAMESPACE_DATABASE).Collection("remote_data")
@@ -187,6 +189,12 @@ func v1_xcash_namespace_unauthorized_names_status_name(c *fiber.Ctx) error {
   // get the resource
   if name = c.Params("name"); name == "" {
     error := ErrorResults{"Could not get the name status"}
+    return c.JSON(error)
+  }
+  
+  // check if the name is valid
+  if !valid_name(name) {
+      error := ErrorResults{"Could not get the name status"}
     return c.JSON(error)
   }
   
