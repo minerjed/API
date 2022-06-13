@@ -1,7 +1,6 @@
 package main
 
 import (
-"fmt"
 "bytes"
 "io/ioutil"
 "net/http"
@@ -34,7 +33,6 @@ func send_http_data(url string,data string) (string, error) {
   
   // get the response body
   body, _ := ioutil.ReadAll(resp.Body)
-  fmt.Printf("for %s sending %s received %s\n", url,data,body)
 
   return string(body),nil
 }
