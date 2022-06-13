@@ -783,9 +783,21 @@ func v1_xcash_dpops_unauthorized_delegates_rounds(c *fiber.Ctx) error {
   var error error
   var totalBlocksProduced int = 0
   var totalBlockRewards int64 = 0
+  
+  // setup database
+  collection := mongoClient.Database(XCASH_API_DATABASE).Collection("blocks")
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
 
   // get the resource
   if delegate = c.Params("delegateName"); delegate == "" {
+    error := ErrorResults{"Could not get the delegate round details"}
+    return c.JSON(error)
+  }
+  
+  // check if the delegate is in the database
+  count,err := collection.CountDocuments(ctx, bson.D{{"delegate",delegate}})
+  if err != nil || int(count) == 0 {
     error := ErrorResults{"Could not get the delegate round details"}
     return c.JSON(error)
   }
@@ -797,11 +809,6 @@ func v1_xcash_dpops_unauthorized_delegates_rounds(c *fiber.Ctx) error {
   }
   current_block_height -= 1
   current_block_height -= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
-  
-  // setup database
-  collection := mongoClient.Database(XCASH_API_DATABASE).Collection("blocks")
-  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-  defer cancel()
   
   mongo_sort, error = collection.Find(ctx, bson.D{{"delegate",delegate}})
     if error != nil {
@@ -898,6 +905,9 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
     // only return the start and limit
     if limit > len(output) {
       limit = len(output)
+    }
+    if start > len(output) {
+      start = len(output)
     }
     output = output[start:limit]
     
