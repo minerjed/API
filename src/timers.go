@@ -1,8 +1,8 @@
 package main
 
 import (
-"strings"
 "fmt"
+"strings"
 "context"
 "strconv"
 "encoding/json"
@@ -23,8 +23,13 @@ func timers() {
 }
 
 func timers_build_data() {
-    block_height := XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
+    block_height := 800000
+    
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").InsertOne(ctx, bson.D{{"public", "0"}, {"private", "0"}})
     for {
+            fmt.Printf("Processing block: %d\n",block_height)
             process_block_data_build_data(block_height)
             block_height++
             time.Sleep(10 * time.Second)
@@ -139,13 +144,6 @@ func process_block_data() {
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"public", strconv.Itoa(public_tx_count)}}}})
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"private", strconv.Itoa(private_tx_count)}}}})
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)}})
- 
-  fmt.Println(block_height)
-   fmt.Println(delegate)
-   fmt.Println(timestamp)
-   fmt.Println(reward)
-   fmt.Println(public_tx_count)
-   fmt.Println(private_tx_count)
     
   return
 }
@@ -252,12 +250,5 @@ func process_block_data_build_data(block_height int) {
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"private", strconv.Itoa(private_tx_count)}}}})
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(reward, 10)},{"time", strconv.Itoa(timestamp)}})
  
-  fmt.Println(block_height)
-   fmt.Println(delegate)
-   fmt.Println(timestamp)
-   fmt.Println(reward)
-   fmt.Println(public_tx_count)
-   fmt.Println(private_tx_count)
-    
   return
 }
