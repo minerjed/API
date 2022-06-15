@@ -441,17 +441,22 @@ type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
 
 // Xpayment
 type v1XpaymentUnauthorizedStats struct {
-	TotalUsers            int `json:"totalUsers"`
-	TotalTipsPublic       int `json:"totalTipsPublic"`
-	TotalTipsPrivate      int `json:"totalTipsPrivate"`
-	TotalVolumeSent       int `json:"totalVolumeSent"`
-	AvgTipAmount          int `json:"avgTipAmount"`
-	TipsSentLastHour      int `json:"tipsSentLastHour"`
-	TipsSentLast24Hours   int `json:"tipsSentLast24Hours"`
-	VolumeSentLastHour    int `json:"volumeSentLastHour"`
-	VolumeSentLast24Hours int `json:"volumeSentLast24Hours"`
-	TotalDeposits         int `json:"totalDeposits"`
-	TotalWithdraws        int `json:"totalWithdraws"`
+	TotalUsers                     int `json:"totalUsers"`
+	AvgTipAmount                   int `json:"avgTipAmount"`
+	TotalDeposits                  int `json:"totalDeposits"`
+	TotalWithdraws                 int `json:"totalWithdraws"`
+	TotalTipsPublic                int `json:"totalTipsPublic"`
+	TotalTipsPrivate               int `json:"totalTipsPrivate"`
+	TotalVolumeSentPublic          int64 `json:"totalVolumeSentPublic"`
+	TotalVolumeSentPrivate         int64 `json:"totalVolumeSentPrivate"`
+	TotalTipsLastDayPublic         int `json:"totalTipsLastDayPublic"`
+	TotalTipsLastDayPrivate        int `json:"totalTipsLastDayPrivate"`
+	TotalVolumeSentLastDayPublic   int64 `json:"totalVolumeSentLastDayPublic"`
+	TotalVolumeSentLastDayPrivate  int64 `json:"totalVolumeSentLastDayPrivate"`
+	TotalTipsLastHourPublic        int `json:"totalTipsLastHourPublic"`
+	TotalTipsLastHourPrivate       int `json:"totalTipsLastHourPrivate"`
+	TotalVolumeSentLastHourPublic  int64 `json:"totalVolumeSentLastHourPublic"`
+	TotalVolumeSentLastHourPrivate int64 `json:"totalVolumeSentLastHourPrivate"`
 }
 
 type v1XpaymentUnauthorizedStatsperday []struct {
@@ -482,17 +487,22 @@ type v1XpaymentUnauthorizedRecentTips []struct {
 
 // Xpayment Twitter 
 type v1XpaymentTwitterUnauthorizedStats struct {
-	TotalUsers            int `json:"totalUsers"`
-	TotalTipsPublic       int `json:"totalTipsPublic"`
-	TotalTipsPrivate      int `json:"totalTipsPrivate"`
-	TotalVolumeSent       int `json:"totalVolumeSent"`
-	AvgTipAmount          int `json:"avgTipAmount"`
-	TipsSentLastHour      int `json:"tipsSentLastHour"`
-	TipsSentLast24Hours   int `json:"tipsSentLast24Hours"`
-	VolumeSentLastHour    int `json:"volumeSentLastHour"`
-	VolumeSentLast24Hours int `json:"volumeSentLast24Hours"`
-	TotalDeposits         int `json:"totalDeposits"`
-	TotalWithdraws        int `json:"totalWithdraws"`
+	TotalUsers                     int `json:"totalUsers"`
+	AvgTipAmount                   int `json:"avgTipAmount"`
+	TotalDeposits                  int `json:"totalDeposits"`
+	TotalWithdraws                 int `json:"totalWithdraws"`
+	TotalTipsPublic                int `json:"totalTipsPublic"`
+	TotalTipsPrivate               int `json:"totalTipsPrivate"`
+	TotalVolumeSentPublic          int64 `json:"totalVolumeSentPublic"`
+	TotalVolumeSentPrivate         int64 `json:"totalVolumeSentPrivate"`
+	TotalTipsLastDayPublic         int `json:"totalTipsLastDayPublic"`
+	TotalTipsLastDayPrivate        int `json:"totalTipsLastDayPrivate"`
+	TotalVolumeSentLastDayPublic   int64 `json:"totalVolumeSentLastDayPublic"`
+	TotalVolumeSentLastDayPrivate  int64 `json:"totalVolumeSentLastDayPrivate"`
+	TotalTipsLastHourPublic        int `json:"totalTipsLastHourPublic"`
+	TotalTipsLastHourPrivate       int `json:"totalTipsLastHourPrivate"`
+	TotalVolumeSentLastHourPublic  int64 `json:"totalVolumeSentLastHourPublic"`
+	TotalVolumeSentLastHourPrivate int64 `json:"totalVolumeSentLastHourPrivate"`
 }
 
 type v1XpaymentTwitterUnauthorizedStatsperday []struct {
