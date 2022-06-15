@@ -6,7 +6,7 @@ Please read the [documentation](https://docs.xcash.foundation/api/get-started) t
 The API covers:  
 Blockchain  
 DPOPS  
-Namespace 
+Namespace   
 Xpayment Twitter
 
 
