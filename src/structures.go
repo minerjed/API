@@ -593,6 +593,6 @@ type v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData struct {
 }
 
 type v1XpaymentTwitterUnauthorizedRecentTipsPostData struct {
-	Sort      string `json:"tx"`
-	Type      string `json:"address"`
+	Sort      string `json:"sort"`
+	Type      string `json:"type"`
 }
