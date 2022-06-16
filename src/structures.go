@@ -459,10 +459,10 @@ type v1XpaymentTwitterUnauthorizedStats struct {
 	TotalVolumeSentLastHourPrivate int64 `json:"totalVolumeSentLastHourPrivate"`
 }
 
-type v1XpaymentTwitterUnauthorizedStatsperday []struct {
+type v1XpaymentTwitterUnauthorizedStatsperday struct {
 	Time   int `json:"time"`
 	Amount int `json:"amount"`
-	Volume int `json:"volume"`
+	Volume int64 `json:"volume"`
 }
 
 type v1XpaymentTwitterUnauthorizedTopstats struct {
