@@ -439,52 +439,6 @@ type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
 	Extension string `json:"extension"`
 }
 
-// Xpayment
-type v1XpaymentUnauthorizedStats struct {
-	TotalUsers                     int `json:"totalUsers"`
-	AvgTipAmount                   int `json:"avgTipAmount"`
-	TotalDeposits                  int `json:"totalDeposits"`
-	TotalWithdraws                 int `json:"totalWithdraws"`
-	TotalTipsPublic                int `json:"totalTipsPublic"`
-	TotalTipsPrivate               int `json:"totalTipsPrivate"`
-	TotalVolumeSentPublic          int64 `json:"totalVolumeSentPublic"`
-	TotalVolumeSentPrivate         int64 `json:"totalVolumeSentPrivate"`
-	TotalTipsLastDayPublic         int `json:"totalTipsLastDayPublic"`
-	TotalTipsLastDayPrivate        int `json:"totalTipsLastDayPrivate"`
-	TotalVolumeSentLastDayPublic   int64 `json:"totalVolumeSentLastDayPublic"`
-	TotalVolumeSentLastDayPrivate  int64 `json:"totalVolumeSentLastDayPrivate"`
-	TotalTipsLastHourPublic        int `json:"totalTipsLastHourPublic"`
-	TotalTipsLastHourPrivate       int `json:"totalTipsLastHourPrivate"`
-	TotalVolumeSentLastHourPublic  int64 `json:"totalVolumeSentLastHourPublic"`
-	TotalVolumeSentLastHourPrivate int64 `json:"totalVolumeSentLastHourPrivate"`
-}
-
-type v1XpaymentUnauthorizedStatsperday []struct {
-	Time   int `json:"time"`
-	Amount int `json:"amount"`
-	Volume int `json:"volume"`
-}
-
-type v1XpaymentUnauthorizedTopstats struct {
-	TopTips []struct {
-		Username string `json:"username"`
-		Tips     int    `json:"tips"`
-	} `json:"topTips"`
-	TopVolumes []struct {
-		Username string `json:"username"`
-		Volume   int    `json:"volume"`
-	} `json:"topVolumes"`
-}
-
-type v1XpaymentUnauthorizedRecentTips []struct {
-	TweetID  string `json:"tweetId"`
-	FromUser string `json:"fromUser"`
-	ToUser   string `json:"toUser"`
-	Amount   int    `json:"amount"`
-	Time     int    `json:"time"`
-	Type     string `json:"type"`
-}
-
 // Xpayment Twitter 
 type v1XpaymentTwitterUnauthorizedStats struct {
 	TotalUsers                     int `json:"totalUsers"`
