@@ -465,16 +465,22 @@ type v1XpaymentTwitterUnauthorizedStatsperday struct {
 	Volume int64 `json:"volume"`
 }
 
-type v1XpaymentTwitterUnauthorizedTopstats struct {
-	TopTips []struct {
+type TopTips struct {
 		Username string `json:"username"`
 		Tips     int    `json:"tips"`
-	} `json:"topTips"`
-	TopVolumes []struct {
+	}
+	
+	type TopVolumes struct {
 		Username string `json:"username"`
 		Volume   int    `json:"volume"`
-	} `json:"topVolumes"`
 }
+
+type v1XpaymentTwitterUnauthorizedTopstats struct {
+	TopTips []TopTips
+	TopVolumes []TopVolumes
+}
+
+
 
 type v1XpaymentTwitterUnauthorizedRecentTips []struct {
 	TweetID  string `json:"tweetId"`
