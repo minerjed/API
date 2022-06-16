@@ -67,17 +67,11 @@ func main() {
   app.Get("/v1/xcash/namespace/unauthorized/names/convert/:name",v1_xcash_namespace_unauthorized_names_convert_name)
   app.Get("/v1/xcash/namespace/unauthorized/addresses/convert/:address",v1_xcash_namespace_unauthorized_names_convert_address)
  
- // setup xpayment routes
-  /*app.Get("/v1/xpayment/unauthorized/stats/",v1_xpayment_unauthorized_stats)
-  app.Get("/v1/xpayment/unauthorized/statsPerDay/:start/:limit",v1_xpayment_unauthorized_statsperday)
-  app.Get("/v1/xpayment/unauthorized/topStats/:amount",v1_xpayment_unauthorized_topstats)
-  app.Post("/v1/xpayment/unauthorized/recentTips/:amount",v1_xpayment_unauthorized_recent_tips)
-  
   // setup xpayment twitter routes
-  app.Get("/v1/xpayment-twitter/unauthorized/stats/",v1_xpayment_twitter_unauthorized_stats)
-  app.Get("/v1/xpayment-twitter/unauthorized/statsPerDay/:start/:limit",v1_xpayment_twitter_unauthorized_statsperday)
-  app.Get("/v1/xpayment-twitter/unauthorized/topStats/:amount",v1_xpayment_twitter_unauthorized_topstats)
-  app.Post("/v1/xpayment-twitter/unauthorized/recentTips/:amount",v1_xpayment_twitter_unauthorized_recent_tips)*/
+  app.Get("/v1/xpayment-twitter/twitter/unauthorized/stats/",v1_xpayment_twitter_unauthorized_stats)
+  /*app.Get("/v1/xpayment-twitter/twitter/unauthorized/statsPerDay/:start/:limit",v1_xpayment_twitter_unauthorized_statsperday)
+  app.Get("/v1/xpayment-twitter/twitter/unauthorized/topStats/:amount",v1_xpayment_twitter_unauthorized_topstats)
+  app.Post("/v1/xpayment-twitter/twitter/unauthorized/recentTips/:amount",v1_xpayment_twitter_unauthorized_recent_tips)*/
 
   // setup global routes
   app.Get("/*", func(c *fiber.Ctx) error {
