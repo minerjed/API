@@ -1,6 +1,7 @@
 package main
 
 import (
+"strconv"
 "context"
 "time"
 "github.com/gofiber/fiber/v2"
@@ -165,6 +166,110 @@ func v1_xpayment_twitter_unauthorized_stats(c *fiber.Ctx) error {
   output.TotalTipsLastHourPrivate = tt1_private
   output.TotalVolumeSentLastHourPublic = tv1_public
   output.TotalVolumeSentLastHourPrivate = tv1_private
+
+  return c.JSON(output)
+}
+
+func v1_xpayment_twitter_unauthorized_statsperday(c *fiber.Ctx) error {
+
+  // Variables
+  output:=[]*v1XpaymentTwitterUnauthorizedStatsperday{}
+  var count int
+  var count_previous int
+  var start int
+  var limit int
+  var mongo_sort *mongo.Cursor
+  var mongo_results []bson.M
+  var error error
+  
+  var amount int64
+  var time_settings int
+  var total_amount int = 0
+  var total_volume int64 = 0
+  current_time := time.Now().UTC().Unix()
+  
+
+  // setup database
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  
+   // get the resource
+  if start,_ = strconv.Atoi(c.Params("start")); c.Params("start") == "" || start < 0 {
+    error := ErrorResults{"Could not get xpayment twitter stats per day"}
+    return c.JSON(error)
+  }
+  
+  if limit,_ = strconv.Atoi(c.Params("limit")); c.Params("limit") == "" {
+    error := ErrorResults{"Could not get xpayment twitter stats per day"}
+    return c.JSON(error)
+  }
+  
+  
+  // get the payment details 
+  mongo_sort, error = mongoClient.Database(XPAYMENT_TWITTER_DATABASE).Collection("twitterHistory").Find(ctx, bson.D{{}})
+  if error != nil {
+    error := ErrorResults{"Could not get the xpayment twitter statistics"}
+    return c.JSON(error)
+  }
+
+  if error = mongo_sort.All(ctx, &mongo_results); error != nil {
+    error := ErrorResults{"Could not get the xcash dpops statistics"}
+    return c.JSON(error)
+  }
+  
+  count_previous = START_TIME
+  for count = START_TIME + 86400; count < int(current_time + 86400); count += 86400 {
+
+  for _, item := range mongo_results {
+	
+	 switch v1 := item["amount"].(type) {
+	case int32:
+		amount = int64(v1)
+	case int64:
+		amount = int64(v1)
+    case float32:
+		amount = int64(v1)
+	case float64:
+		amount = int64(v1)
+	}
+	
+	 switch v2 := item["time"].(type) {
+	case int32:
+		time_settings = int(v2)
+	case int64:
+		time_settings = int(v2)
+    case float32:
+		time_settings = int(v2)
+	case float64:
+		time_settings = int(v2)
+	}
+	
+	if time_settings > count_previous && time_settings <= count {
+        total_amount++;
+        total_volume += amount;
+      }
+	}
+	
+	data:=new(v1XpaymentTwitterUnauthorizedStatsperday)
+    data.Time = count_previous
+    data.Amount = total_amount
+    data.Volume = total_volume
+    output=append(output,data)
+	count_previous = count
+	total_amount = 0
+	total_volume = 0
+  }
+	
+	
+	
+	// only return the start and limit
+    if limit > len(output) {
+      limit = len(output)
+    }
+    if start > len(output) {
+      start = len(output)
+    }
+    output = output[start:limit]
 
   return c.JSON(output)
 }
