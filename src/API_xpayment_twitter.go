@@ -388,23 +388,17 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
   // Variables
   output:=[]*v1XpaymentTwitterUnauthorizedRecentTips{}
   var post_data v1XpaymentTwitterUnauthorizedRecentTipsPostData
-  var count int
-  var count_previous int
   var mongo_sort *mongo.Cursor
   var mongo_results []bson.M
   var error error
   
   var amount int
-  var time_settings int
-  var total_amount int = 0
-  var total_volume int64 = 0
   
   var settings int
   var tweet_id string
   var tx_amount int64
   var tx_time int
-  var tx_type
-  current_time := time.Now().UTC().Unix()
+  var tx_type string
   
   // get the parameters
   if err := c.BodyParser(&post_data); err != nil {
@@ -436,13 +430,11 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
   }
 
   if error = mongo_sort.All(ctx, &mongo_results); error != nil {
-    error := ErrorResults{"CCould not get xpayment twitter payments"}
+    error := ErrorResults{"Could not get xpayment twitter payments"}
     return c.JSON(error)
   }
   
   for _, item := range mongo_results {
-      
-      data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
 	
 	 switch v1 := item["type"].(type) {
 	case int32:
@@ -456,23 +448,17 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
 	}
 	
 	// check the tx type and options
-	if (post_data.Type == "public" && settings == 1) || (post_data.Type == "private" && settings == 0) {
+	if (post_data.Type == "Public" && settings == 1) || (post_data.Type == "Private" && settings == 0) {
 	    continue
 	}
 	
 	if settings == 0 {
 	    switch v1 := item["tweetId"].(type) {
-	case int32:
-		settings = strconv.Atoi(v1)
-	case int64:
-		settings = strconv.Atoi(v1)
-    case float32:
-		settings = strconv.Atoi(v1)
-	case float64:
-		settings = strconv.Atoi(v1)
-	} else {
-	    tweet_id = ""
+		  case string:
+	    	tweet_id = v1
 	}
+	} else {
+	    tweet_id = "TPrivate"
 	}
 	
 	 switch v2 := item["time"].(type) {
@@ -488,13 +474,13 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
 	
 	switch v3 := item["amount"].(type) {
 	case int32:
-		tx_amount = int64(v2)
+		tx_amount = int64(v3)
 	case int64:
-		tx_amount = int64(v2)
+		tx_amount = int64(v3)
     case float32:
-		tx_amount = int64(v2)
+		tx_amount = int64(v3)
 	case float64:
-		tx_amount = int64(v2)
+		tx_amount = int64(v3)
 	}
 	
 	if settings == 1 {
@@ -519,7 +505,7 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
         if post_data.Sort == "First" {
           return output[i].Time > output[j].Time
         } else {
-            return output[i].Time < output[j].Time
+            return output[j].Time > output[i].Time
         }
     })
 	
