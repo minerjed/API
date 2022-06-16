@@ -480,13 +480,11 @@ type v1XpaymentTwitterUnauthorizedTopstats struct {
 	TopVolumes []TopVolumes
 }
 
-
-
-type v1XpaymentTwitterUnauthorizedRecentTips []struct {
+type v1XpaymentTwitterUnauthorizedRecentTips struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	ToUser   string `json:"toUser"`
-	Amount   int    `json:"amount"`
+	Amount   int64    `json:"amount"`
 	Time     int    `json:"time"`
 	Type     string `json:"type"`
 }
@@ -592,4 +590,9 @@ type v1XcashBlockchainUnauthorizedAddressProvePostData struct {
 type v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData struct {
 	Address           string `json:"Address"`
 	PaymentID         string `json:"paymentId"`
+}
+
+type v1XpaymentTwitterUnauthorizedRecentTipsPostData struct {
+	Sort      string `json:"tx"`
+	Type      string `json:"address"`
 }
