@@ -49,6 +49,7 @@ const VALID_NAME_DATA = `^[0-9A-Z]+$`
 const XPAYMENT_TWITTER_DATABASE = "xpaymentTwitter"
 const time_day = 86400;
 const time_hour = 3600;
+const START_TIME = 1654041600;
 
 // Variables
 var mongoClient *mongo.Client
