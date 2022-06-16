@@ -382,3 +382,152 @@ func v1_xpayment_twitter_unauthorized_topstats(c *fiber.Ctx) error {
 
   return c.JSON(output)
 }
+
+func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
+
+  // Variables
+  output:=[]*v1XpaymentTwitterUnauthorizedRecentTips{}
+  var post_data v1XpaymentTwitterUnauthorizedRecentTipsPostData
+  var count int
+  var count_previous int
+  var mongo_sort *mongo.Cursor
+  var mongo_results []bson.M
+  var error error
+  
+  var amount int
+  var time_settings int
+  var total_amount int = 0
+  var total_volume int64 = 0
+  
+  var settings int
+  var tweet_id string
+  var tx_amount int64
+  var tx_time int
+  var tx_type
+  current_time := time.Now().UTC().Unix()
+  
+  // get the parameters
+  if err := c.BodyParser(&post_data); err != nil {
+    error := ErrorResults{"Could not get xpayment twitter payments"}
+    return c.JSON(error)
+  }
+
+  // error check
+  if post_data.Sort == "" || post_data.Type == "" || (post_data.Sort != "First" && post_data.Sort != "Last") || (post_data.Type != "Public" && post_data.Type != "Private" && post_data.Type != "All") {
+    error := ErrorResults{"Could not get xpayment twitter payments"}
+    return c.JSON(error)
+  }
+
+  // setup database
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  
+   // get the resource
+  if amount,_ = strconv.Atoi(c.Params("amount")); c.Params("amount") == "" || amount < 0 {
+    error := ErrorResults{"Could not get xpayment twitter payments"}
+    return c.JSON(error)
+  }
+  
+  // get the payment details 
+  mongo_sort, error = mongoClient.Database(XPAYMENT_TWITTER_DATABASE).Collection("twitterHistory").Find(ctx, bson.D{{}})
+  if error != nil {
+    error := ErrorResults{"Could not get xpayment twitter payments"}
+    return c.JSON(error)
+  }
+
+  if error = mongo_sort.All(ctx, &mongo_results); error != nil {
+    error := ErrorResults{"CCould not get xpayment twitter payments"}
+    return c.JSON(error)
+  }
+  
+  for _, item := range mongo_results {
+      
+      data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
+	
+	 switch v1 := item["type"].(type) {
+	case int32:
+		settings = int(v1)
+	case int64:
+		settings = int(v1)
+    case float32:
+		settings = int(v1)
+	case float64:
+		settings = int(v1)
+	}
+	
+	// check the tx type and options
+	if (post_data.Type == "public" && settings == 1) || (post_data.Type == "private" && settings == 0) {
+	    continue
+	}
+	
+	if settings == 0 {
+	    switch v1 := item["tweetId"].(type) {
+	case int32:
+		settings = strconv.Atoi(v1)
+	case int64:
+		settings = strconv.Atoi(v1)
+    case float32:
+		settings = strconv.Atoi(v1)
+	case float64:
+		settings = strconv.Atoi(v1)
+	} else {
+	    tweet_id = ""
+	}
+	}
+	
+	 switch v2 := item["time"].(type) {
+	case int32:
+		tx_time = int(v2)
+	case int64:
+		tx_time = int(v2)
+    case float32:
+		tx_time = int(v2)
+	case float64:
+		tx_time = int(v2)
+	}
+	
+	switch v3 := item["amount"].(type) {
+	case int32:
+		tx_amount = int64(v2)
+	case int64:
+		tx_amount = int64(v2)
+    case float32:
+		tx_amount = int64(v2)
+	case float64:
+		tx_amount = int64(v2)
+	}
+	
+	if settings == 1 {
+	    tx_type = "private"
+	} else {
+	    tx_type = "public"
+	}
+	
+	data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
+    data.TweetID = tweet_id
+    data.FromUser = item["fromUser"].(string)
+    data.ToUser = item["toUser"].(string)
+    data.Amount = tx_amount
+    data.Time = tx_time
+    data.Type = tx_type
+    output=append(output,data)
+  }
+  
+  // sort the array
+  
+  sort.Slice(output[:], func(i, j int) bool {
+        if post_data.Sort == "First" {
+          return output[i].Time > output[j].Time
+        } else {
+            return output[i].Time < output[j].Time
+        }
+    })
+	
+	// only return the amount
+    if amount > len(output) {
+      amount = len(output)
+    }
+    output = output[0:amount]
+
+  return c.JSON(output)
+}
