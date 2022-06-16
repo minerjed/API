@@ -46,6 +46,9 @@ const XCASH_NAMESPACE_DATABASE = "XCASH_REMOTE_DATA"
 const XCASH_API_DATABASE = "XCASH_API"
 const REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT = "10000000000"
 const VALID_NAME_DATA = `^[0-9A-Z]+$`
+const XPAYMENT_TWITTER_DATABASE = "xpaymentTwitter"
+const time_day = 86400;
+const time_hour = 3600;
 
 // Variables
 var mongoClient *mongo.Client
