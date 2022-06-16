@@ -398,7 +398,6 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
   var tweet_id string
   var tx_amount int64
   var tx_time int
-  var tx_type string
   
   // get the parameters
   if err := c.BodyParser(&post_data); err != nil {
@@ -484,19 +483,24 @@ func v1_xpayment_twitter_unauthorized_recent_tips(c *fiber.Ctx) error {
 	}
 	
 	if settings == 1 {
-	    tx_type = "private"
+	    data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
+    data.TweetID = tweet_id
+    data.FromUser = "XPAYMENTS PRIVATE TX"
+    data.ToUser = "XPAYMENTS PRIVATE TX"
+    data.Amount = 0
+    data.Time = tx_time
+    data.Type = "private"
+    output=append(output,data)
 	} else {
-	    tx_type = "public"
-	}
-	
-	data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
+	    data:=new(v1XpaymentTwitterUnauthorizedRecentTips)
     data.TweetID = tweet_id
     data.FromUser = item["fromUser"].(string)
     data.ToUser = item["toUser"].(string)
     data.Amount = tx_amount
     data.Time = tx_time
-    data.Type = tx_type
+    data.Type = "public"
     output=append(output,data)
+	}	
   }
   
   // sort the array
