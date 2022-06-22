@@ -397,6 +397,38 @@ func v1_xcash_blockchain_unauthorized_address_prove(c *fiber.Ctx) error {
   return c.JSON(output)
 }
 
+func v1_xcash_blockchain_unauthorized_address_validate(c *fiber.Ctx) error {
+
+  // Variables
+  var data_send string
+  var data_read_1 ValidateAddress
+  var output v1XcashBlockchainUnauthorizedAddressValidate;
+  var address string
+  var error error
+  
+  // get the resource
+  if address = c.Params("address"); address == ""  {
+    error := ErrorResults{"Could not validate the address"}
+    return c.JSON(error)
+  }
+  
+  // get info
+  data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"validate_address","params":{"address":"` + address + `"}}`)
+  if !strings.Contains(data_send, "\"result\"") || error != nil {
+    error := ErrorResults{"Could not validate the address"}
+    return c.JSON(error)
+  }
+  if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
+    error := ErrorResults{"Could not validate the address"}
+    return c.JSON(error)
+  } 
+
+  // fill in the data
+  output.Valid = data_read_1.Result.Valid
+    
+  return c.JSON(output)
+}
+
 func v1_xcash_blockchain_unauthorized_address_history(c *fiber.Ctx) error {
 
   // Variables
