@@ -231,6 +231,15 @@ type BlockHeaderRange struct {
 	} `json:"result"`
 }
 
+type ValidateAddress struct {
+	ID      string `json:"id"`
+	Jsonrpc string `json:"jsonrpc"`
+	Result  struct {
+		Valid bool `json:"valid"`
+	} `json:"result"`
+}
+
+
 
 // API Structures
 
@@ -273,6 +282,10 @@ type v1XcashBlockchainUnauthorizedTxProve struct {
 
 type v1XcashBlockchainUnauthorizedAddressProve struct {
 	Amount       int64 `json:"amount"`
+}
+
+type v1XcashBlockchainUnauthorizedAddressValidate struct {
+	Valid       bool `json:"valid"`
 }
 
 type v1XcashBlockchainUnauthorizedAddressHistory struct {
