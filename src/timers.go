@@ -60,9 +60,19 @@ func process_block_data(block_height int) {
   var amount int64
   var data_read_3 BlockchainBlock
   var data_read_4 BlockchainBlockJson
+  var count int64
+  var err error
+  
+  var block_found bool = false
   
   ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
+  
+  // check to make sure you have not already added this block 
+  count,err = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").CountDocuments(ctx, bson.D{{"height",strconv.Itoa(block_height)}})
+  if err != nil || count != 0 {
+    block_found = true
+  }
   
   // get the currrent tx count 
   err := mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
@@ -109,6 +119,12 @@ func process_block_data(block_height int) {
   
   
   for _, tx := range data_read_4.TxHashes {
+      // check to make sure you have not already added this tx 
+  count,err = mongoClient.Database(XCASH_API_DATABASE).Collection("tx").CountDocuments(ctx, bson.D{{"tx",tx}})
+  if err != nil || count != 0 {
+    continue
+  }
+  
       // get the tx details
   data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
   if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
@@ -157,7 +173,8 @@ func process_block_data(block_height int) {
       }
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"public", strconv.Itoa(public_tx_count)}}}})
   _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").UpdateOne(ctx, bson.D{{}},bson.D{{"$set", bson.D{{"private", strconv.Itoa(private_tx_count)}}}})
-  _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(data_read_3.Result.BlockHeader.Reward, 10)},{"time", strconv.Itoa(data_read_3.Result.BlockHeader.Timestamp)}})
- 
+  if !block_found {
+    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(data_read_3.Result.BlockHeader.Reward, 10)},{"time", strconv.Itoa(data_read_3.Result.BlockHeader.Timestamp)}})
+  }
   return
 }
