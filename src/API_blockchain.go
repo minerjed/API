@@ -1,7 +1,6 @@
 package main
 
 import (
-"fmt"
 "math/rand"
 "strings"
 "sort"
@@ -266,7 +265,6 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
   s := string(data_read_2.Result.JSON)
   s = strings.Replace(s, "\\n", "", -1)
   s = strings.Replace(s, "\\", "", -1)
-  fmt.Println(s)
   if err := json.Unmarshal([]byte(s), &data_read_3); err != nil {
     error := ErrorResults{"Could not get the block data"}
     return c.JSON(error)
@@ -550,7 +548,7 @@ func v1_xcash_blockchain_unauthorized_tx_txHash(c *fiber.Ctx) error {
   
   // get info
   data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
-  if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
+  if !strings.Contains(data_send, "txs_as_hex") || error != nil {
     error := ErrorResults{"Could not get the tx details"}
     return c.JSON(error)
   }
