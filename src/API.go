@@ -41,10 +41,10 @@ func main() {
   app.Get("/v1/xcash/blockchain/unauthorized/blocks/:blockHeight/",v1_xcash_blockchain_unauthorized_blocks_blockHeight)
   app.Get("/v1/xcash/blockchain/unauthorized/tx/:txHash/",v1_xcash_blockchain_unauthorized_tx_txHash)
   app.Post("/v1/xcash/blockchain/unauthorized/tx/prove/",v1_xcash_blockchain_unauthorized_tx_prove)
-  app.Post("/v1/xcash/blockchain/unauthorized/address/prove",v1_xcash_blockchain_unauthorized_address_prove)
-  app.Get("v1/xcash/blockchain/unauthorized/address/history/:type/:address",v1_xcash_blockchain_unauthorized_address_history)
-  app.Get("v1/xcash/blockchain/unauthorized/address/validate/:address",v1_xcash_blockchain_unauthorized_address_validate)
-  app.Post("/v1/xcash/blockchain/unauthorized/address/createIntegrated",v1_xcash_blockchain_unauthorized_address_create_integrated)
+  app.Post("/v1/xcash/blockchain/unauthorized/address/prove/",v1_xcash_blockchain_unauthorized_address_prove)
+  app.Get("/v1/xcash/blockchain/unauthorized/address/history/:type/:address/",v1_xcash_blockchain_unauthorized_address_history)
+  app.Get("/v1/xcash/blockchain/unauthorized/address/validate/:address/",v1_xcash_blockchain_unauthorized_address_validate)
+  app.Post("/v1/xcash/blockchain/unauthorized/address/createIntegrated/",v1_xcash_blockchain_unauthorized_address_create_integrated)
   
   // setup xcash dpops routes
   app.Get("/v1/xcash/dpops/unauthorized/stats/",v1_xcash_dpops_unauthorized_stats)
