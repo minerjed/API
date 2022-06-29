@@ -61,7 +61,6 @@ func process_block_data(block_height int) {
   var data_read_3 BlockchainBlock
   var data_read_4 BlockchainBlockJson
   var count int64
-  var err error
   
   var block_found bool = false
   
@@ -69,13 +68,13 @@ func process_block_data(block_height int) {
   defer cancel()
   
   // check to make sure you have not already added this block 
-  count,err = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").CountDocuments(ctx, bson.D{{"height",strconv.Itoa(block_height)}})
+  count,err := mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").CountDocuments(ctx, bson.D{{"height",strconv.Itoa(block_height)}})
   if err != nil || count != 0 {
     block_found = true
   }
   
   // get the currrent tx count 
-  err := mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
+  err = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
   if err == mongo.ErrNoDocuments {
     return
   } else if err != nil {
