@@ -25,7 +25,11 @@ func timers() {
             }
             block_height -= 1
             fmt.Printf("Processing block: %d\n",block_height)
-            process_block_data(block_height)
+            START2:
+            if process_block_data(block_height) == false {
+              time.Sleep(30 * time.Second)
+              goto START2;
+            }
             time.Sleep(1 * time.Second)
         }
         time.Sleep(1 * time.Second)
@@ -48,7 +52,7 @@ func timers_build_data() {
         }
     }
 
-func process_block_data(block_height int) {
+func process_block_data(block_height int) bool {
 
   // Variables
   var s string
@@ -79,9 +83,9 @@ func process_block_data(block_height int) {
   // get the currrent tx count 
   err = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").FindOne(ctx, bson.D{{}}).Decode(&database_data)
   if err == mongo.ErrNoDocuments {
-    return
+    return false
   } else if err != nil {
-    return
+    return false
   }
   
   public_tx_count,_ = strconv.Atoi(database_data.Public)
@@ -91,10 +95,10 @@ func process_block_data(block_height int) {
   // get block
   data_send,error = send_http_data("http://127.0.0.1:18281/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":` + strconv.Itoa(block_height) + `}}`)
   if !strings.Contains(data_send, "\"result\"") || error != nil {
-    return
+    return false
   }
   if err := json.Unmarshal([]byte(data_send), &data_read_3); err != nil {
-    return
+    return false
   }
 
   // get the tx
@@ -102,7 +106,7 @@ func process_block_data(block_height int) {
   s = strings.Replace(s, "\\n", "", -1)
   s = strings.Replace(s, "\\", "", -1)
   if err := json.Unmarshal([]byte(s), &data_read_4); err != nil {
-    return
+    return false
   }
   
   // parse the reserve bytes 
@@ -110,7 +114,7 @@ func process_block_data(block_height int) {
     // get the reserve bytes
     delegate = get_reserve_bytes(block_height)
     if delegate == "" {
-      return
+      return false
     }
     delegate = delegate[strings.Index(delegate, BLOCKCHAIN_RESERVED_BYTES_START)+len(BLOCKCHAIN_RESERVED_BYTES_START):strings.Index(delegate, BLOCKCHAIN_DATA_SEGMENT_STRING)]
     delegate_name_data,_ := hex.DecodeString(delegate)
@@ -130,10 +134,10 @@ func process_block_data(block_height int) {
       // get the tx details
   data_send,error = send_http_data("http://127.0.0.1:18281/get_transactions",`{"txs_hashes":["` + tx + `"]}`)
   if !strings.Contains(data_send, "\"status\": \"OK\"") || error != nil {
-    return
+    return false
   }
   if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
-    return
+    return false
   }
   
   // get the public tx info
@@ -157,10 +161,10 @@ func process_block_data(block_height int) {
       // get the amount
       data_send,error = send_http_data("http://127.0.0.1:18289/json_rpc",`{"jsonrpc":"2.0","id":"0","method":"check_tx_key","params":{"txid":"` + tx + `","tx_key":"` + key + `","address":"` + receiver + `"}}`)
     if !strings.Contains(data_send, "\"result\"") || error != nil {
-      return
+      return false
     }
     if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
-      return
+      return false
     }
     
     amount = data_read_2.Result.Received
@@ -178,5 +182,5 @@ func process_block_data(block_height int) {
   if !block_found {
     _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("blocks").InsertOne(ctx, bson.D{{"height", strconv.Itoa(block_height)}, {"delegate", delegate},{"reward", strconv.FormatInt(data_read_3.Result.BlockHeader.Reward, 10)},{"time", strconv.Itoa(data_read_3.Result.BlockHeader.Timestamp)}})
   }
-  return
+  return true
 }
