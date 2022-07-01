@@ -80,7 +80,7 @@ func main() {
   })
   
   // start the timers 
-  //go timers()
+  go timers()
   // go timers_build_data()
   
   // start the server
