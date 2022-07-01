@@ -18,8 +18,10 @@ func timers() {
     for {
         if time.Now().Minute() % XCASH_DPOPS_BLOCK_TIME == 3 && time.Now().Second() == 0 {
             // get the previous block Height
+            START:
             if block_height = get_current_block_height(); block_height == 0 {
-              return
+              time.Sleep(30 * time.Second)
+              goto START;
             }
             block_height -= 1
             fmt.Printf("Processing block: %d\n",block_height)
