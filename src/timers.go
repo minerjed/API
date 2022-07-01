@@ -16,7 +16,7 @@ func timers() {
     var block_height int
     
     for {
-        if time.Now().Minute() % XCASH_DPOPS_BLOCK_TIME == 3 && time.Now().Second() == 0 {
+        if time.Now().Minute() % XCASH_DPOPS_BLOCK_TIME == 3 {
             // get the previous block Height
             START:
             if block_height = get_current_block_height(); block_height == 0 {
@@ -30,14 +30,14 @@ func timers() {
               time.Sleep(30 * time.Second)
               goto START2;
             }
-            time.Sleep(1 * time.Second)
+            time.Sleep(60 * time.Second)
         }
         time.Sleep(1 * time.Second)
     }
 }
 
 func timers_build_data() {
-    block_height := 0
+    block_height := 938892
     
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
   defer cancel()
