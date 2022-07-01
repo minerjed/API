@@ -24,7 +24,7 @@ func timers() {
               goto START;
             }
             block_height -= 1
-            fmt.Printf("Processing block: %d\n",block_height)
+            fmt.Printf("Timer Processing block: %d\n",block_height)
             START2:
             if process_block_data(block_height) == false {
               time.Sleep(30 * time.Second)
@@ -37,20 +37,31 @@ func timers() {
 }
 
 func timers_build_data() {
-    block_height := 938892
+    var block_height int
+    var count int
     
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-  defer cancel()
-  if block_height == 0 {
-    _,_ = mongoClient.Database(XCASH_API_DATABASE).Collection("statistics").InsertOne(ctx, bson.D{{"public", "0"}, {"private", "0"}})
-  }
     for {
-            fmt.Printf("Processing block: %d\n",block_height)
-            process_block_data(block_height)
-            block_height++
-            time.Sleep(1 * time.Second)
-        }
+      if time.Now().Minute() % 30 == 1 {
+            START:
+            if block_height = get_current_block_height(); block_height == 0 {
+              time.Sleep(5 * time.Second)
+              goto START;
+            }
+            block_height -= 16
+            for count = 0; count < 15; count++ {
+                fmt.Printf("Build Data Timer Processing block: %d\n",block_height)
+              START2:
+              if process_block_data(block_height) == false {
+                time.Sleep(5 * time.Second)
+                goto START2;
+              }
+              block_height++
+              time.Sleep(1 * time.Second)
+            }
+            time.Sleep(1 * time.Minute)
     }
+    }
+}
 
 func process_block_data(block_height int) bool {
 
