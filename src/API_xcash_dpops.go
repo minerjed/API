@@ -299,7 +299,7 @@ func v1_xcash_dpops_unauthorized_delegates_registered(c *fiber.Ctx) error {
         data.SharedDelegate = true
       }
       
-      if strings.Contains(item["IP_address"].(string), ".xcash.foundation") {
+      if strings.Contains(item["IP_address"].(string), ".xcash.tech") {
         data.SeedNode = true
       } else {
         data.SeedNode = false
@@ -325,29 +325,29 @@ func v1_xcash_dpops_unauthorized_delegates_registered(c *fiber.Ctx) error {
 	    var count2 int
 	    
 	    // check if the delegate is a network data node
-	    if output[i].IPAdress == "us1.xcash.foundation" {
+	    if output[i].IPAdress == "us1.xcash.tech" {
 	      count1 = 5
-	    } else if output[i].IPAdress == "europe1.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe1.xcash.tech" {
 	      count1 = 4
-	    } else if output[i].IPAdress == "europe2.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe2.xcash.tech" {
 	      count1 = 3
-	    } else if output[i].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe3.xcash.tech" {
 	      count1 = 2
-	    } else if output[i].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[i].IPAdress == "oceania1.xcash.tech" {
 	      count1 = 1
 	    } else {
 	      count1 = 0      
 	    }
 	    
-	    if output[j].IPAdress == "us1.xcash.foundation" {
+	    if output[j].IPAdress == "us1.xcash.tech" {
 	      count2 = 5
-	    } else if output[j].IPAdress == "europe1.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe1.xcash.tech" {
 	      count2 = 4
-	    } else if output[j].IPAdress == "europe2.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe2.xcash.tech" {
 	      count2 = 3
-	    } else if output[j].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe3.xcash.tech" {
 	      count2 = 2
-	    } else if output[j].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[j].IPAdress == "oceania1.xcash.tech" {
 	      count2 = 1
 	    } else {
 	      count2 = 0      
@@ -425,7 +425,7 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
         data.SharedDelegate = true
       }
       
-      if strings.Contains(item["IP_address"].(string), ".xcash.foundation") {
+      if strings.Contains(item["IP_address"].(string), ".xcash.tech") {
         data.SeedNode = true
       } else {
         data.SeedNode = false
@@ -447,29 +447,29 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
 	    var count2 int
 	    
 	    // check if the delegate is a network data node
-	    if output[i].IPAdress == "us1.xcash.foundation" {
+	    if output[i].IPAdress == "us1.xcash.tech" {
 	      count1 = 5
-	    } else if output[i].IPAdress == "europe1.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe1.xcash.tech" {
 	      count1 = 4
-	    } else if output[i].IPAdress == "europe2.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe2.xcash.tech" {
 	      count1 = 3
-	    } else if output[i].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[i].IPAdress == "europe3.xcash.tech" {
 	      count1 = 2
-	    } else if output[i].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[i].IPAdress == "oceania1.xcash.tech" {
 	      count1 = 1
 	    } else {
 	      count1 = 0      
 	    }
 	    
-	    if output[j].IPAdress == "us1.xcash.foundation" {
+	    if output[j].IPAdress == "us1.xcash.tech" {
 	      count2 = 5
-	    } else if output[j].IPAdress == "europe1.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe1.xcash.tech" {
 	      count2 = 4
-	    } else if output[j].IPAdress == "europe2.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe2.xcash.tech" {
 	      count2 = 3
-	    } else if output[j].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[j].IPAdress == "europe3.xcash.tech" {
 	      count2 = 2
-	    } else if output[j].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[j].IPAdress == "oceania1.xcash.tech" {
 	      count2 = 1
 	    } else {
 	      count2 = 0      
@@ -534,7 +534,13 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
         data.SharedDelegate = true
       }
       
-      if strings.Contains(item["IP_address"].(string), ".xcash.foundation") && item["IP_address"].(string) != "api.xcash.foundation" {
+
+      <option value="seed1.xcash.tech:18281">Seed1</option>
+      <option value="seed2.xcash.tech:18281">Seed2</option>
+      <option value="seed3.xcash.tech:18281">Seed3</option>
+
+
+      if strings.Contains(item["IP_address"].(string), ".xcash.tech") {
         data.SeedNode = true
       } else {
         data.SeedNode = false
@@ -560,29 +566,21 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
 	    var count2 int
 	    
 	    // check if the delegate is a network data node
-	    if output[i].IPAdress == "us1.xcash.foundation" {
-	      count1 = 5
-	    } else if output[i].IPAdress == "europe1.xcash.foundation" {
-	      count1 = 4
-	    } else if output[i].IPAdress == "europe2.xcash.foundation" {
+	    if output[i].IPAdress == "seed1.xcash.tech" {
 	      count1 = 3
-	    } else if output[i].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[i].IPAdress == "seed2.xcash.tech" {
 	      count1 = 2
-	    } else if output[i].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[i].IPAdress == "seed3.xcash.tech" {
 	      count1 = 1
 	    } else {
 	      count1 = 0      
 	    }
 	    
-	    if output[j].IPAdress == "us1.xcash.foundation" {
-	      count2 = 5
-	    } else if output[j].IPAdress == "europe1.xcash.foundation" {
-	      count2 = 4
-	    } else if output[j].IPAdress == "europe2.xcash.foundation" {
+	    if output[j].IPAdress == "seed1.xcash.tech" {
 	      count2 = 3
-	    } else if output[j].IPAdress == "europe3.xcash.foundation" {
+	    } else if output[j].IPAdress == "seed2.xcash.tech" {
 	      count2 = 2
-	    } else if output[j].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output[j].IPAdress == "seed3.xcash.tech" {
 	      count2 = 1
 	    } else {
 	      count2 = 0      
@@ -608,9 +606,10 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
     })
     
     // only return the top 50
-    //output = output[0:BLOCK_VERIFIERS_AMOUNT]
-    output = output[0:10]
-	
+    if len(output) > BLOCK_VERIFIERS_AMOUNT {
+      output = output[0:BLOCK_VERIFIERS_AMOUNT]
+    }
+
   return c.JSON(output)
 }
 
@@ -689,29 +688,29 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
 	    var count2 int
 	    
 	    // check if the delegate is a network data node
-	    if output_data[i].IPAdress == "us1.xcash.foundation" {
+	    if output_data[i].IPAdress == "us1.xcash.tech" {
 	      count1 = 5
-	    } else if output_data[i].IPAdress == "europe1.xcash.foundation" {
+	    } else if output_data[i].IPAdress == "europe1.xcash.tech" {
 	      count1 = 4
-	    } else if output_data[i].IPAdress == "europe2.xcash.foundation" {
+	    } else if output_data[i].IPAdress == "europe2.xcash.tech" {
 	      count1 = 3
-	    } else if output_data[i].IPAdress == "europe3.xcash.foundation" {
+	    } else if output_data[i].IPAdress == "europe3.xcash.tech" {
 	      count1 = 2
-	    } else if output_data[i].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output_data[i].IPAdress == "oceania1.xcash.tech" {
 	      count1 = 1
 	    } else {
 	      count1 = 0      
 	    }
 	    
-	    if output_data[j].IPAdress == "us1.xcash.foundation" {
+	    if output_data[j].IPAdress == "us1.xcash.tech" {
 	      count2 = 5
-	    } else if output_data[j].IPAdress == "europe1.xcash.foundation" {
+	    } else if output_data[j].IPAdress == "europe1.xcash.tech" {
 	      count2 = 4
-	    } else if output_data[j].IPAdress == "europe2.xcash.foundation" {
+	    } else if output_data[j].IPAdress == "europe2.xcash.tech" {
 	      count2 = 3
-	    } else if output_data[j].IPAdress == "europe3.xcash.foundation" {
+	    } else if output_data[j].IPAdress == "europe3.xcash.tech" {
 	      count2 = 2
-	    } else if output_data[j].IPAdress == "oceania1.xcash.foundation" {
+	    } else if output_data[j].IPAdress == "oceania1.xcash.tech" {
 	      count2 = 1
 	    } else {
 	      count2 = 0      
@@ -750,7 +749,7 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
         output.SharedDelegate = true
       }
       
-      if strings.Contains(database_data_delegates.IPAddress, ".xcash.foundation") && database_data_delegates.IPAddress != "api.xcash.foundation" {
+      if strings.Contains(database_data_delegates.IPAddress, ".xcash.tech") {
         output.SeedNode = true
       } else {
         output.SeedNode = false
