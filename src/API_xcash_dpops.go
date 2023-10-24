@@ -608,8 +608,9 @@ func v1_xcash_dpops_unauthorized_delegates_active(c *fiber.Ctx) error {
     })
     
     // only return the top 50
-    output = output[0:BLOCK_VERIFIERS_AMOUNT]
-    
+    //output = output[0:BLOCK_VERIFIERS_AMOUNT]
+    output = output[0:10]
+	
   return c.JSON(output)
 }
 
