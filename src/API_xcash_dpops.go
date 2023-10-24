@@ -683,29 +683,21 @@ func v1_xcash_dpops_unauthorized_delegates(c *fiber.Ctx) error {
 		var count2 int
 
 		// check if the delegate is a network data node
-		if output_data[i].IPAdress == "us1.xcash.tech" {
-			count1 = 5
-		} else if output_data[i].IPAdress == "europe1.xcash.tech" {
-			count1 = 4
-		} else if output_data[i].IPAdress == "europe2.xcash.tech" {
+		if output_data[i].IPAdress == "seed1.xcash.tech" {
 			count1 = 3
-		} else if output_data[i].IPAdress == "europe3.xcash.tech" {
+		} else if output_data[i].IPAdress == "seed2.xcash.tech" {
 			count1 = 2
-		} else if output_data[i].IPAdress == "oceania1.xcash.tech" {
+		} else if output_data[i].IPAdress == "seed3.xcash.tech" {
 			count1 = 1
 		} else {
 			count1 = 0
 		}
 
-		if output_data[j].IPAdress == "us1.xcash.tech" {
-			count2 = 5
-		} else if output_data[j].IPAdress == "europe1.xcash.tech" {
-			count2 = 4
-		} else if output_data[j].IPAdress == "europe2.xcash.tech" {
+		if output_data[j].IPAdress == "seed1.xcash.tech" {
 			count2 = 3
-		} else if output_data[j].IPAdress == "europe3.xcash.tech" {
+		} else if output_data[j].IPAdress == "seed2.xcash.tech" {
 			count2 = 2
-		} else if output_data[j].IPAdress == "oceania1.xcash.tech" {
+		} else if output_data[j].IPAdress == "seed3.xcash.tech" {
 			count2 = 1
 		} else {
 			count2 = 0
