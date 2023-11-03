@@ -859,6 +859,7 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 
 	// get the delegates PublicAddress
 	address := get_delegate_address_from_name(delegate)
+	fmt.Printf("The value of address is: %s\n", address)
 
 	// setup database
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -867,14 +868,15 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 	for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
 		mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+string(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
 		if err != nil {
+			fmt.Printf("Error 1")
 			continue
 		}
 
 		var mongo_results []bson.M
 		if err = mongo_sort.All(ctx, &mongo_results); err != nil {
+			fmt.Printf("Error 2")
 			continue
 		}
-		fmt.Printf("The value of limit is: %s\n", mongo_results)
 
 		for _, item := range mongo_results {
 			// fill in the data
@@ -885,6 +887,10 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 			output = append(output, data)
 		}
 
+	}
+
+	for _, data := range output {
+		fmt.Printf("Public Address: %s, Reserve Proof: %s, Amount: %d\n", data.PublicAddress, data.ReserveProof, data.Amount)
 	}
 
 	// sort the arrray by vote total
