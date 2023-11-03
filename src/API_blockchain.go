@@ -257,10 +257,6 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
 	}
 
 	// get block
-	if requestBlockHeight == "" {
-		// Handle the case where requestBlockHeight is not provided
-		fmt.Println("requestBlockHeight is empty")
-	}
 	data_send, error = send_http_data("http://127.0.0.1:18281/json_rpc", `{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":`+requestBlockHeight+`}}`)
 	if !strings.Contains(data_send, "\"result\"") || error != nil {
 		fmt.Printf("An error occurred: %v\n", error)
