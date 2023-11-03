@@ -246,7 +246,7 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
 	}
 	fmt.Printf("3Entering get block height\n")
 	if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
-		fmt.Printf("An error occurred: %v\n", error)
+		fmt.Printf("An error occurred: %v\n", err)
 		error := ErrorResults{"Could not get the block data"}
 		return c.JSON(error)
 	}
