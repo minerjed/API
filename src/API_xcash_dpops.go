@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -854,6 +855,7 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 		error := ErrorResults{"Could not get the delegate vote details"}
 		return c.JSON(error)
 	}
+	fmt.Printf("The value of limit is: %d\n", limit)
 
 	// get the delegates PublicAddress
 	address := get_delegate_address_from_name(delegate)
@@ -872,6 +874,7 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 		if err = mongo_sort.All(ctx, &mongo_results); err != nil {
 			continue
 		}
+		fmt.Printf("The value of limit is: %s\n", mongo_results)
 
 		for _, item := range mongo_results {
 			// fill in the data
