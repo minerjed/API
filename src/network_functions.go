@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -11,10 +10,6 @@ import (
 
 func send_http_data(url string, data string) (string, error) {
 	// create the http request
-	fmt.Printf("2Entering send_http_data\n")
-	fmt.Printf("url: %v\n", url)
-	fmt.Printf("data: %v\n", data)
-
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		return "", errors.New("failed to create HTTP request")

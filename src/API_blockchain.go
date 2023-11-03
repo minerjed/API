@@ -236,14 +236,12 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
 	var error error
 
 	// get info
-	fmt.Printf("Entering get block height\n")
-
 	data_send, error = send_http_data("http://127.0.0.1:18281/json_rpc", `{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
-	fmt.Printf("2Entering get block height\n")
 	fmt.Printf("2An error occurred while sending HTTP data: %v\n", error)
 	fmt.Printf("2An error occurred while sending HTTP data: %v\n", data_send)
 
 	if !strings.Contains(data_send, "\"result\"") || error != nil {
+		fmt.Printf(" in iff Entering get block height\n")
 		error := ErrorResults{"Could not get the block data"}
 		return c.JSON(error)
 	}
