@@ -39,7 +39,7 @@ sudo apt install mongodb-org
 ```
 
 Install  
-`git clone https://github.com/X-CASH-official/turbotx-backend.git && cd API`
+`git clone https://github.com/minerjed/API && cd API`
 
 copy the systemd file  
 `cp -a API.service /lib/systemd/system/ && sudo systemctl daemon-reload`
