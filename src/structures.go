@@ -3,10 +3,8 @@ package main
 // Errors
 
 type ErrorResults struct {
-    Error string `json:"Error"`
+	Error string `json:"Error"`
 }
-
-
 
 // Blockchain
 
@@ -28,7 +26,7 @@ type BlockchainStats struct {
 		DatabaseSize              int64  `json:"database_size"`
 		Difficulty                int64  `json:"difficulty"`
 		DifficultyTop64           int    `json:"difficulty_top64"`
-		FreeSpace                 int64  `json:"free_space"`
+		FreeSpace                 uint64 `json:"free_space"`
 		GreyPeerlistSize          int    `json:"grey_peerlist_size"`
 		Height                    int    `json:"height"`
 		HeightWithoutBootstrap    int    `json:"height_without_bootstrap"`
@@ -239,53 +237,51 @@ type ValidateAddress struct {
 	} `json:"result"`
 }
 
-
-
 // API Structures
 
 // Blockchain
 
 type v1XcashBlockchainUnauthorizedStats struct {
-	Height                 int `json:"height"`
+	Height                 int    `json:"height"`
 	Hash                   string `json:"hash"`
-	Reward                 int64 `json:"reward"`
-	Size                   int64 `json:"size"`
-	Version                int `json:"version"`
-	VersionBlockHeight     int `json:"versionBlockHeight"`
-	NextVersionBlockHeight int `json:"nextVersionBlockHeight"`
-	TotalPublicTx                int `json:"totalPublicTx"`
-	TotalPrivateTx                int `json:"totalPrivateTx"`
-	CirculatingSupply      int64 `json:"circulatingSupply"`
-	GeneratedSupply        int64 `json:"generatedSupply"`
-	TotalSupply            int64 `json:"totalSupply"`
-	EmissionReward         int64 `json:"emissionReward"`
-        EmissionHeight         int `json:"emissionHeight"`
-    	EmissionTime           int `json:"emissionTime"`
-        InflationHeight        int `json:"inflationHeight"`
-    	InflationTime          int `json:"inflationTime"`
+	Reward                 int64  `json:"reward"`
+	Size                   int64  `json:"size"`
+	Version                int    `json:"version"`
+	VersionBlockHeight     int    `json:"versionBlockHeight"`
+	NextVersionBlockHeight int    `json:"nextVersionBlockHeight"`
+	TotalPublicTx          int    `json:"totalPublicTx"`
+	TotalPrivateTx         int    `json:"totalPrivateTx"`
+	CirculatingSupply      int64  `json:"circulatingSupply"`
+	GeneratedSupply        int64  `json:"generatedSupply"`
+	TotalSupply            int64  `json:"totalSupply"`
+	EmissionReward         int64  `json:"emissionReward"`
+	EmissionHeight         int    `json:"emissionHeight"`
+	EmissionTime           int    `json:"emissionTime"`
+	InflationHeight        int    `json:"inflationHeight"`
+	InflationTime          int    `json:"inflationTime"`
 }
 
 type v1XcashBlockchainUnauthorizedBlocksBlockHeight struct {
-	Height       int           `json:"height"`
-	Hash         string        `json:"hash"`
-	Reward       int64         `json:"reward"`
-	Time         int           `json:"time"`
-	XcashDPOPS   bool          `json:"xcashDPOPS"`
-	DelegateName string        `json:"delegateName"`
-	Tx           []string      `json:"tx"`
+	Height       int      `json:"height"`
+	Hash         string   `json:"hash"`
+	Reward       int64    `json:"reward"`
+	Time         int      `json:"time"`
+	XcashDPOPS   bool     `json:"xcashDPOPS"`
+	DelegateName string   `json:"delegateName"`
+	Tx           []string `json:"tx"`
 }
 
 type v1XcashBlockchainUnauthorizedTxProve struct {
-	Valid  bool `json:"valid"`
-	Amount int64  `json:"amount"`
+	Valid  bool  `json:"valid"`
+	Amount int64 `json:"amount"`
 }
 
 type v1XcashBlockchainUnauthorizedAddressProve struct {
-	Amount       int64 `json:"amount"`
+	Amount int64 `json:"amount"`
 }
 
 type v1XcashBlockchainUnauthorizedAddressValidate struct {
-	Valid       bool `json:"valid"`
+	Valid bool `json:"valid"`
 }
 
 type v1XcashBlockchainUnauthorizedAddressHistory struct {
@@ -293,7 +289,7 @@ type v1XcashBlockchainUnauthorizedAddressHistory struct {
 	Key      string `json:"key"`
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
-	Amount   int64   `json:"amount"`
+	Amount   int64  `json:"amount"`
 	Height   int    `json:"height"`
 	Time     int    `json:"time"`
 }
@@ -310,7 +306,7 @@ type v1XcashBlockchainUnauthorizedTxTxHash struct {
 	Type          string `json:"type"`
 	Sender        string `json:"sender"`
 	Receiver      string `json:"receiver"`
-	Amount        int64    `json:"amount"`
+	Amount        int64  `json:"amount"`
 }
 
 // XCASH DPOPS
@@ -368,32 +364,32 @@ type v1XcashDpopsUnauthorizedDelegatesData struct {
 }
 
 type v1XcashDpopsUnauthorizedDelegatesRounds struct {
-	TotalBlocksProduced int `json:"totalBlocksProduced"`
+	TotalBlocksProduced int   `json:"totalBlocksProduced"`
 	TotalBlockRewards   int64 `json:"totalBlockRewards"`
-	AveragePercentage   int `json:"averagePercentage"`
-	AverageTime         int `json:"averageTime"`
+	AveragePercentage   int   `json:"averagePercentage"`
+	AverageTime         int   `json:"averageTime"`
 	BlocksProduced      []struct {
-		BlockHeight int `json:"blockHeight"`
+		BlockHeight int   `json:"blockHeight"`
 		BlockReward int64 `json:"blockReward"`
-		Time        int `json:"time"`
+		Time        int   `json:"time"`
 	} `json:"blocksProduced"`
 }
 
-type BlocksProduced      struct {
-		BlockHeight int `json:"blockHeight"`
-		BlockReward int64 `json:"blockReward"`
-		Time        int `json:"time"`
-	}
+type BlocksProduced struct {
+	BlockHeight int   `json:"blockHeight"`
+	BlockReward int64 `json:"blockReward"`
+	Time        int   `json:"time"`
+}
 
 type v1XcashDpopsUnauthorizedDelegatesVotes struct {
 	PublicAddress string `json:"publicAddress"`
-	Amount        int64    `json:"amount"`
+	Amount        int64  `json:"amount"`
 	ReserveProof  string `json:"reserveProof"`
 }
 
 type v1XcashDpopsUnauthorizedVotes struct {
-	DelegateName  string `json:"delegateName"`
-	Amount        int64    `json:"amount"`
+	DelegateName string `json:"delegateName"`
+	Amount       int64  `json:"amount"`
 }
 
 type v1XcashDpopsUnauthorizedRounds struct {
@@ -406,22 +402,22 @@ type v1XcashDpopsUnauthorizedLastBlockProducer struct {
 
 // XCASH Namespace
 type v1XcashNamespaceUnauthorizedStats struct {
-	TotalNamesRegisteredOrRenewed int `json:"totalNamesRegisteredOrRenewed"`
+	TotalNamesRegisteredOrRenewed int   `json:"totalNamesRegisteredOrRenewed"`
 	TotalVolume                   int64 `json:"totalVolume"`
 }
 
 type v1XcashNamespaceUnauthorizedDelegatesRegistered struct {
 	DelegateName  string `json:"delegateName"`
 	PublicAddress string `json:"publicAddress"`
-	Amount        int64    `json:"amount"`
+	Amount        int64  `json:"amount"`
 }
 
 type v1XcashNamespaceUnauthorizedDelegatesDelegateName struct {
 	DelegateName                  string `json:"delegateName"`
 	PublicAddress                 string `json:"publicAddress"`
-	Amount                        int64    `json:"amount"`
+	Amount                        int64  `json:"amount"`
 	TotalNamesRegisteredOrRenewed int    `json:"totalNamesRegisteredOrRenewed"`
-	TotalVolume                   int64    `json:"totalVolume"`
+	TotalVolume                   int64  `json:"totalVolume"`
 }
 
 type v1XcashNamespaceUnauthorizedNamesName struct {
@@ -430,7 +426,7 @@ type v1XcashNamespaceUnauthorizedNamesName struct {
 	Paddress       string `json:"paddress"`
 	Expires        int    `json:"expires"`
 	DelegateName   string `json:"delegateName"`
-	DelegateAmount int64    `json:"delegateAmount"`
+	DelegateAmount int64  `json:"delegateAmount"`
 }
 
 type v1XcashNamespaceUnauthorizedNamesStatusName struct {
@@ -452,44 +448,44 @@ type v1XcashNamespaceUnauthorizedNamesConvertAddress struct {
 	Extension string `json:"extension"`
 }
 
-// Xpayment Twitter 
+// Xpayment Twitter
 type v1XpaymentTwitterUnauthorizedStats struct {
-	TotalUsers                     int `json:"totalUsers"`
-	AvgTipAmount                   int `json:"avgTipAmount"`
-	TotalDeposits                  int `json:"totalDeposits"`
-	TotalWithdraws                 int `json:"totalWithdraws"`
-	TotalTipsPublic                int `json:"totalTipsPublic"`
-	TotalTipsPrivate               int `json:"totalTipsPrivate"`
+	TotalUsers                     int   `json:"totalUsers"`
+	AvgTipAmount                   int   `json:"avgTipAmount"`
+	TotalDeposits                  int   `json:"totalDeposits"`
+	TotalWithdraws                 int   `json:"totalWithdraws"`
+	TotalTipsPublic                int   `json:"totalTipsPublic"`
+	TotalTipsPrivate               int   `json:"totalTipsPrivate"`
 	TotalVolumeSentPublic          int64 `json:"totalVolumeSentPublic"`
 	TotalVolumeSentPrivate         int64 `json:"totalVolumeSentPrivate"`
-	TotalTipsLastDayPublic         int `json:"totalTipsLastDayPublic"`
-	TotalTipsLastDayPrivate        int `json:"totalTipsLastDayPrivate"`
+	TotalTipsLastDayPublic         int   `json:"totalTipsLastDayPublic"`
+	TotalTipsLastDayPrivate        int   `json:"totalTipsLastDayPrivate"`
 	TotalVolumeSentLastDayPublic   int64 `json:"totalVolumeSentLastDayPublic"`
 	TotalVolumeSentLastDayPrivate  int64 `json:"totalVolumeSentLastDayPrivate"`
-	TotalTipsLastHourPublic        int `json:"totalTipsLastHourPublic"`
-	TotalTipsLastHourPrivate       int `json:"totalTipsLastHourPrivate"`
+	TotalTipsLastHourPublic        int   `json:"totalTipsLastHourPublic"`
+	TotalTipsLastHourPrivate       int   `json:"totalTipsLastHourPrivate"`
 	TotalVolumeSentLastHourPublic  int64 `json:"totalVolumeSentLastHourPublic"`
 	TotalVolumeSentLastHourPrivate int64 `json:"totalVolumeSentLastHourPrivate"`
 }
 
 type v1XpaymentTwitterUnauthorizedStatsperday struct {
-	Time   int `json:"time"`
-	Amount int `json:"amount"`
+	Time   int   `json:"time"`
+	Amount int   `json:"amount"`
 	Volume int64 `json:"volume"`
 }
 
 type TopTips struct {
-		Username string `json:"username"`
-		Tips     int    `json:"tips"`
-	}
-	
-	type TopVolumes struct {
-		Username string `json:"username"`
-		Volume   int    `json:"volume"`
+	Username string `json:"username"`
+	Tips     int    `json:"tips"`
+}
+
+type TopVolumes struct {
+	Username string `json:"username"`
+	Volume   int    `json:"volume"`
 }
 
 type v1XpaymentTwitterUnauthorizedTopstats struct {
-	TopTips []TopTips
+	TopTips    []TopTips
 	TopVolumes []TopVolumes
 }
 
@@ -497,11 +493,10 @@ type v1XpaymentTwitterUnauthorizedRecentTips struct {
 	TweetID  string `json:"tweetId"`
 	FromUser string `json:"fromUser"`
 	ToUser   string `json:"toUser"`
-	Amount   int64    `json:"amount"`
+	Amount   int64  `json:"amount"`
 	Time     int    `json:"time"`
 	Type     string `json:"type"`
 }
-
 
 // Database
 
@@ -582,11 +577,10 @@ type XcashDpopsRemoteDataCollection struct {
 
 // API
 type XcashAPIStatisticsCollection struct {
-	ID                     string `bson:"_id"`
-	Public                 string `bson:"public"`
-	Private                string `bson:"private"`
+	ID      string `bson:"_id"`
+	Public  string `bson:"public"`
+	Private string `bson:"private"`
 }
-
 
 // Post request data
 type v1XcashBlockchainUnauthorizedTxProvePostData struct {
@@ -596,16 +590,16 @@ type v1XcashBlockchainUnauthorizedTxProvePostData struct {
 }
 
 type v1XcashBlockchainUnauthorizedAddressProvePostData struct {
-	Address       string `json:"address"`
-	Signature     string `json:"signature"`
+	Address   string `json:"address"`
+	Signature string `json:"signature"`
 }
 
 type v1XcashBlockchainUnauthorizedAddressCreateIntegratedPostData struct {
-	Address           string `json:"Address"`
-	PaymentID         string `json:"paymentId"`
+	Address   string `json:"Address"`
+	PaymentID string `json:"paymentId"`
 }
 
 type v1XpaymentTwitterUnauthorizedRecentTipsPostData struct {
-	Sort      string `json:"sort"`
-	Type      string `json:"type"`
+	Sort string `json:"sort"`
+	Type string `json:"type"`
 }
