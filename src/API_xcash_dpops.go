@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -861,13 +860,10 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 
 		for _, item := range mongo_results {
 			// fill in the data
-			fmt.Printf("Processing...\n")
 			data := new(v1XcashDpopsUnauthorizedDelegatesVotes)
 			data.PublicAddress = item["public_address_created_reserve_proof"].(string)
 			data.ReserveProof = item["reserve_proof"].(string)
 			data.Amount, _ = strconv.ParseInt(item["total"].(string), 10, 64)
-			fmt.Printf("Amount: %d\n", data.Amount)
-
 			output = append(output, data)
 		}
 
