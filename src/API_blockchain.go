@@ -240,13 +240,13 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
 
 	data_send, error = send_http_data("http://127.0.0.1:18281/json_rpc", `{"jsonrpc":"2.0","id":"0","method":"get_info"}`)
 	if !strings.Contains(data_send, "\"result\"") || error != nil {
-		error := ErrorResults{"Could not get the block data"}
 		fmt.Printf("An error occurred: %v\n", error)
+		error := ErrorResults{"Could not get the block data"}
 		return c.JSON(error)
 	}
 	if err := json.Unmarshal([]byte(data_send), &data_read_1); err != nil {
-		error := ErrorResults{"Could not get the block data"}
 		fmt.Printf("An error occurred: %v\n", error)
+		error := ErrorResults{"Could not get the block data"}
 		return c.JSON(error)
 	}
 
@@ -263,13 +263,13 @@ func v1_xcash_blockchain_unauthorized_blocks_blockHeight(c *fiber.Ctx) error {
 	}
 	data_send, error = send_http_data("http://127.0.0.1:18281/json_rpc", `{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":`+requestBlockHeight+`}}`)
 	if !strings.Contains(data_send, "\"result\"") || error != nil {
-		error := ErrorResults{"Could not get the block data"}
 		fmt.Printf("An error occurred: %v\n", error)
+		error := ErrorResults{"2 Could not get the block data"}
 		return c.JSON(error)
 	}
 	if err := json.Unmarshal([]byte(data_send), &data_read_2); err != nil {
-		error := ErrorResults{"Could not get the block data"}
 		fmt.Printf("An error occurred: %v\n", error)
+		error := ErrorResults{"2 Could not get the block data"}
 		return c.JSON(error)
 	}
 
