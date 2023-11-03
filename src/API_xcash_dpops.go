@@ -327,29 +327,21 @@ func v1_xcash_dpops_unauthorized_delegates_registered(c *fiber.Ctx) error {
 		var count2 int
 
 		// check if the delegate is a network data node
-		if output[i].IPAdress == "us1.xcash.tech" {
-			count1 = 5
-		} else if output[i].IPAdress == "europe1.xcash.tech" {
-			count1 = 4
-		} else if output[i].IPAdress == "europe2.xcash.tech" {
+		if output[i].IPAdress == "seed1.xcash.tech" {
 			count1 = 3
-		} else if output[i].IPAdress == "europe3.xcash.tech" {
+		} else if output[i].IPAdress == "seed2.xcash.tech" {
 			count1 = 2
-		} else if output[i].IPAdress == "oceania1.xcash.tech" {
+		} else if output[i].IPAdress == "seed3.xcash.tech" {
 			count1 = 1
 		} else {
 			count1 = 0
 		}
 
-		if output[j].IPAdress == "us1.xcash.tech" {
-			count2 = 5
-		} else if output[j].IPAdress == "europe1.xcash.tech" {
-			count2 = 4
-		} else if output[j].IPAdress == "europe2.xcash.tech" {
+		if output[j].IPAdress == "seed1.xcash.tech" {
 			count2 = 3
-		} else if output[j].IPAdress == "europe3.xcash.tech" {
+		} else if output[j].IPAdress == "seed2.xcash.tech" {
 			count2 = 2
-		} else if output[j].IPAdress == "oceania1.xcash.tech" {
+		} else if output[j].IPAdress == "seed3.xcash.tech" {
 			count2 = 1
 		} else {
 			count2 = 0
@@ -449,29 +441,21 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
 		var count2 int
 
 		// check if the delegate is a network data node
-		if output[i].IPAdress == "us1.xcash.tech" {
-			count1 = 5
-		} else if output[i].IPAdress == "europe1.xcash.tech" {
-			count1 = 4
-		} else if output[i].IPAdress == "europe2.xcash.tech" {
+		if output[i].IPAdress == "seed1.xcash.tech" {
 			count1 = 3
-		} else if output[i].IPAdress == "europe3.xcash.tech" {
+		} else if output[i].IPAdress == "seed2.xcash.tech" {
 			count1 = 2
-		} else if output[i].IPAdress == "oceania1.xcash.tech" {
+		} else if output[i].IPAdress == "seed3.xcash.tech" {
 			count1 = 1
 		} else {
 			count1 = 0
 		}
 
-		if output[j].IPAdress == "us1.xcash.tech" {
-			count2 = 5
-		} else if output[j].IPAdress == "europe1.xcash.tech" {
-			count2 = 4
-		} else if output[j].IPAdress == "europe2.xcash.tech" {
+		if output[j].IPAdress == "seed1.xcash.tech" {
 			count2 = 3
-		} else if output[j].IPAdress == "europe3.xcash.tech" {
+		} else if output[j].IPAdress == "seed2.xcash.tech" {
 			count2 = 2
-		} else if output[j].IPAdress == "oceania1.xcash.tech" {
+		} else if output[j].IPAdress == "seed3.xcash.tech" {
 			count2 = 1
 		} else {
 			count2 = 0
@@ -484,6 +468,7 @@ func v1_xcash_dpops_unauthorized_delegates_online(c *fiber.Ctx) error {
 				return false
 			}
 		}
+
 		return output[i].Votes > output[j].Votes
 	})
 
@@ -855,44 +840,37 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 		error := ErrorResults{"Could not get the delegate vote details"}
 		return c.JSON(error)
 	}
-	fmt.Printf("The value of limit is: %d\n", limit)
 
 	// get the delegates PublicAddress
 	address := get_delegate_address_from_name(delegate)
-	fmt.Printf("The value of address is: %s\n", address)
 
 	// setup database
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-		//	mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+string(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
-		mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+strconv.Itoa(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
-
+		mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+strconv.Itoa(count4)).Find(ctx, bson.D{{Key: "public_address_voted_for", Value: address}})
 		if err != nil {
-			fmt.Printf("Error 1")
 			continue
 		}
 
 		var mongo_results []bson.M
 		if err = mongo_sort.All(ctx, &mongo_results); err != nil {
-			fmt.Printf("Error 2")
 			continue
 		}
 
 		for _, item := range mongo_results {
 			// fill in the data
+			fmt.Printf("Processing...\n")
 			data := new(v1XcashDpopsUnauthorizedDelegatesVotes)
 			data.PublicAddress = item["public_address_created_reserve_proof"].(string)
 			data.ReserveProof = item["reserve_proof"].(string)
 			data.Amount, _ = strconv.ParseInt(item["total"].(string), 10, 64)
+			fmt.Printf("Amount: %d\n", data.Amount)
+
 			output = append(output, data)
 		}
 
-	}
-
-	for _, data := range output {
-		fmt.Printf("Public Address: %s, Reserve Proof: %s, Amount: %d\n", data.PublicAddress, data.ReserveProof, data.Amount)
 	}
 
 	// sort the arrray by vote total
