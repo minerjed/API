@@ -866,7 +866,9 @@ func v1_xcash_dpops_unauthorized_delegates_votes(c *fiber.Ctx) error {
 	defer cancel()
 
 	for count4 = 1; count4 < TOTAL_RESERVE_PROOFS_DATABASES; count4++ {
-		mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+string(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
+		//	mongo_sort, err = mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+string(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
+		mongo_sort, err := mongoClient.Database(XCASH_DPOPS_DATABASE).Collection("reserve_proofs_"+strconv.Itoa(count4)).Find(ctx, bson.D{{"public_address_voted_for", address}})
+
 		if err != nil {
 			fmt.Printf("Error 1")
 			continue
