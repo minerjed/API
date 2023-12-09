@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -20,7 +19,6 @@ func main() {
 	// setup the mongodb connection
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	fmt.Printf("Connect to DB...")
 	mongoClient, mongoClienterror = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if mongoClienterror != nil {
 		os.Exit(0)
