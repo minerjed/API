@@ -21,7 +21,6 @@ func timers() {
 			// get the previous block Height
 		START:
 			if block_height = get_current_block_height(); block_height == 0 {
-				fmt.Printf("Block Height equal 0")
 				time.Sleep(30 * time.Second)
 				goto START
 			}
@@ -55,7 +54,6 @@ func timers_build_data() {
 			START2:
 				if process_block_data(block_height) == false {
 					time.Sleep(5 * time.Second)
-					fmt.Printf("hung here")
 					goto START2
 				}
 				block_height++
